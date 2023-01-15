@@ -1,4 +1,4 @@
-package de.joshuaschnabel.weinfein.infrastructur.presentation.rest.model;
+package de.joshuaschnabel.wem.infrastructur.presentation.rest.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

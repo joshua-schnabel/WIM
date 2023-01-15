@@ -1,8 +1,8 @@
-package de.joshuaschnabel.weinfein.domain.invitation;
+package de.joshuaschnabel.wem.domain.invitation;
 
 import java.util.List;
-import de.joshuaschnabel.weinfein.domain.ddd.AggregateRoot;
-import de.joshuaschnabel.weinfein.domain.guest.GuestStatus;
+import de.joshuaschnabel.wem.domain.ddd.AggregateRoot;
+import de.joshuaschnabel.wem.domain.guest.GuestStatus;
 import lombok.Getter;
 
 @Getter

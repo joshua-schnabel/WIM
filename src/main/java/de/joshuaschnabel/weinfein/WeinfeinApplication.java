@@ -1,13 +1,13 @@
-package de.joshuaschnabel.weinfein;
+package de.joshuaschnabel.wem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WeinfeinApplication {
+public class wemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WeinfeinApplication.class, args);
+		SpringApplication.run(wemApplication.class, args);
 	}
 
 }

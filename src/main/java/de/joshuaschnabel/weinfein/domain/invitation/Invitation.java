@@ -1,8 +1,8 @@
-package de.joshuaschnabel.weinfein.domain.invitation;
+package de.joshuaschnabel.wem.domain.invitation;
 
 import java.util.List;
-import de.joshuaschnabel.weinfein.domain.ddd.AggregateRoot;
-import de.joshuaschnabel.weinfein.domain.guest.GuestId;
+import de.joshuaschnabel.wem.domain.ddd.AggregateRoot;
+import de.joshuaschnabel.wem.domain.guest.GuestId;
 import lombok.Getter;
 
 @Getter
@@ -11,9 +11,9 @@ public class Invitation extends AggregateRoot<InvitationId> {
   private InvitationId id;
 
   private List<GuestId> guests;
-  
-  private Notification notification;
-  
+
+  private String notificationEmail;
+
   private SpecialRequest specialRequest;
 
   @Override

@@ -1,6 +1,6 @@
-package de.joshuaschnabel.weinfein.domain.guest;
+package de.joshuaschnabel.wem.domain.guest;
 
-import de.joshuaschnabel.weinfein.domain.ddd.AggregateId;
+import de.joshuaschnabel.wem.domain.ddd.AggregateId;
 
 public class GuestStatusId extends AggregateId<String> {
 

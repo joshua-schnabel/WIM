@@ -1,6 +1,6 @@
-package de.joshuaschnabel.weinfein.domain.guest;
+package de.joshuaschnabel.wem.domain.guest;
 
-import de.joshuaschnabel.weinfein.domain.ddd.AggregateRoot;
+import de.joshuaschnabel.wem.domain.ddd.AggregateRoot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

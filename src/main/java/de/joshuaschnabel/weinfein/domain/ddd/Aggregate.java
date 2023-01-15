@@ -1,4 +1,4 @@
-package de.joshuaschnabel.weinfein.domain.ddd;
+package de.joshuaschnabel.wem.domain.ddd;
 
 public abstract class Aggregate<Id extends AggregateId<?>> {
 

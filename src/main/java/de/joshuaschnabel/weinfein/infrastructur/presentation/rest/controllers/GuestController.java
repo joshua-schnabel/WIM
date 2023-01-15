@@ -1,4 +1,4 @@
-package de.joshuaschnabel.weinfein.infrastructur.presentation.rest.controllers;
+package de.joshuaschnabel.wem.infrastructur.presentation.rest.controllers;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.joshuaschnabel.weinfein.infrastructur.presentation.rest.model.GuestDTO;
+import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.GuestDTO;
 
 @RestController
 @RequestMapping(path = "api/guests")

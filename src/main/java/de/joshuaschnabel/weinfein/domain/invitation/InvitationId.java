@@ -1,6 +1,6 @@
-package de.joshuaschnabel.weinfein.domain.invitation;
+package de.joshuaschnabel.wem.domain.invitation;
 
-import de.joshuaschnabel.weinfein.domain.ddd.AggregateId;
+import de.joshuaschnabel.wem.domain.ddd.AggregateId;
 
 public class InvitationId extends AggregateId<String> {
 
