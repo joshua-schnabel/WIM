@@ -3,3 +3,19 @@ server:
 spring:
   main:
     web-application-type: reactive
+  profiles:
+    active: "prod"
+---
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+---
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 5s

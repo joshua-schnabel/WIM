@@ -1,19 +1,23 @@
 package de.joshuaschnabel.wem.domain.invitation;
 
 import java.util.List;
-import de.joshuaschnabel.wem.domain.ddd.AggregateRoot;
-import de.joshuaschnabel.wem.domain.guest.GuestStatus;
+import de.joshuaschnabel.wem.domain.ddd.objects.Aggregate;
+import de.joshuaschnabel.wem.domain.ddd.objects.AggregateId;
+import de.joshuaschnabel.wem.domain.guest.status.GuestStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class InvitationStatus extends AggregateRoot<InvitationStatusId> {
-  private InvitationStatusId id;
+@AllArgsConstructor
+public class InvitationStatus extends Aggregate<InvitationStatus.InvitationStatusId> {
 
-  private List<GuestStatus> stati;
+  public static class InvitationStatusId extends AggregateId<Integer> {
 
-  @Override
-  protected void setIdInternal(InvitationStatusId id) {
-    this.id = id;
+    public InvitationStatusId(Integer value) {
+      super(value);
+    }
   }
 
+  private final InvitationStatusId id;
+  private final List<GuestStatus> stati;
 }

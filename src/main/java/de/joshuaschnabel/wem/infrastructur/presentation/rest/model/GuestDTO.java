@@ -1,16 +1,16 @@
 package de.joshuaschnabel.wem.infrastructur.presentation.rest.model;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(staticName = "of")
 public class GuestDTO {
 
-	String firstname;
-	String lastmame;
+  private final String id;
+  private final String firstname;
+  private final String lastmame;
+  private final String type;
+
 
 }

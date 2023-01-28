@@ -1,6 +1,9 @@
-package de.joshuaschnabel.wem.domain.ddd;
+package de.joshuaschnabel.wem.domain.ddd.objects;
 
-public abstract class Aggregate<Id extends AggregateId<?>> {
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
+public abstract class AggregateRoot<Id extends AggregateRootId<?>> {
 
   public abstract Id getId();
 
