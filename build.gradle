@@ -16,10 +16,15 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
 
 dependencies {
 	implementation 'commons-codec:commons-codec:1.15'
+	//implementation 'com.toedter:spring-hateoas-jsonapi:2.0.2-SNAPSHOT'
+	implementation "de.ingogriebsch.hateoas:spring-hateoas-siren:1.4.0-SNAPSHOT"
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 	implementation ('org.springframework.boot:spring-boot-starter-hateoas') {

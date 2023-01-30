@@ -7,10 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor(staticName = "of")
 public class GuestDTO {
 
-  private final String id;
-  private final String firstname;
-  private final String lastmame;
-  private final String type;
-
+	private final String id;
+	private final String firstname;
+	private final String lastmame;
+	private final String guestType;
 
 }

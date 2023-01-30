@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,21 +32,21 @@ public class GuestController {
 
 	private final GuestHatosDecorator hatosDecorator = new GuestHatosDecorator();
 
-	@GetMapping("/")
+	@GetMapping(path = "/")
 	public Mono<CollectionModel<EntityModel<GuestDTO>>> all() {
 		final var elements = this.guestRepository.getAll()
 				.map(GuestMapper.mapToDTO);
 		return this.hatosDecorator.addListLinks(elements);
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping(path = "/{id}")
 	public Mono<ResponseEntity<?>> deleteOne(@PathVariable String id) {
 		final var guestId = GuestMapper.mapDtoIdToGuest.apply(id);
 		return this.guestRepository.remove(guestId)
 				.map(x -> ResponseEntity.ok().build());
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping(path = "/{id}")
 	public Mono<EntityModel<GuestDTO>> findOne(@PathVariable String id) {
 		final var guestId = GuestMapper.mapDtoIdToGuest.apply(id);
 		final var element = this.guestRepository.get(guestId)
@@ -57,7 +58,7 @@ public class GuestController {
 		return this.hatosDecorator.addLinks(element);
 	}
 
-	@PostMapping("/")
+	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<EntityModel<GuestDTO>> newGuest(
 			@RequestBody Mono<EntityModel<GuestDTO>> guestDTO) {
 		return guestDTO.flatMap(resource -> {
@@ -69,7 +70,7 @@ public class GuestController {
 		});
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Mono<EntityModel<GuestDTO>> updateGuest(
 			@RequestBody Mono<EntityModel<GuestDTO>> guestDTO,
 			@PathVariable String id) {

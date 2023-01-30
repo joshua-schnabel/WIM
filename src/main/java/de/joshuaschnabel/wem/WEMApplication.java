@@ -6,12 +6,12 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 
 @SpringBootApplication
-@EnableHypermediaSupport(type = {EnableHypermediaSupport.HypermediaType.HAL})
 @EnableWebFluxSecurity
+@EnableHypermediaSupport(type = {})
 public class WEMApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(WEMApplication.class, args);
-  }
+	public static void main(String[] args) {
+		SpringApplication.run(WEMApplication.class, args);
+	}
 
 }
