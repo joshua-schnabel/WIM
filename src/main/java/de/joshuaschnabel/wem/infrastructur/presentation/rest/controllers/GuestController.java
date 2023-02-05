@@ -42,8 +42,10 @@ public class GuestController {
 	@DeleteMapping(path = "/{id}")
 	public Mono<ResponseEntity<?>> deleteOne(@PathVariable String id) {
 		final var guestId = GuestMapper.mapDtoIdToGuest.apply(id);
-		return this.guestRepository.remove(guestId)
-				.map(x -> ResponseEntity.ok().build());
+		return this.guestRepository.remove(guestId).map(x -> {
+			System.out.println(x);
+			return ResponseEntity.ok().build();
+		});
 	}
 
 	@GetMapping(path = "/{id}")
