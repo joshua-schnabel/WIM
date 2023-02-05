@@ -4,8 +4,12 @@ import de.joshuaschnabel.wem.domain.ddd.objects.AggregateRootId;
 
 public class InvitationId extends AggregateRootId<String> {
 
-  public InvitationId(String value) {
-    super(value);
-  }
+	public static InvitationId of(String id) {
+		return new InvitationId(id);
+	}
+
+	protected InvitationId(String value) {
+		super(value);
+	}
 
 }

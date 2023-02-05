@@ -61,6 +61,9 @@ public class GuestMapper {
 		}
 
 		private String mapTypeToDTO(Guest guest) {
+			if (guest.getType() == null) {
+				throw new IllegalStateException("Type not defind");
+			}
 			return guest.getType().name();
 		}
 	}

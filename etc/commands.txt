@@ -1,0 +1,3 @@
+gradlew dependencyCheckAnalyze
+gradlew refreshVersionsMigrate --mode=VersionsPropertiesAndPlaceholdersInCatalog
+gradlew dependencyUpdates
