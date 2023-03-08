@@ -28,8 +28,8 @@ dependencies {
 	implementation libs.commons.codec
 	implementation libs.spring.hateoas.siren
 	implementation Spring.boot.actuator
-	implementation Spring.boot.data.r2dbc
-	implementation (Spring.boot.hateoas) {
+	implementation libs.spring.data.r2dbc
+	implementation (libs.spring.hateoas) {
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-web"
 	}
 	implementation libs.spring.boot.starter.reactor.netty
@@ -41,7 +41,6 @@ dependencies {
 	compileOnly Spring.boot.devTools
 	compileOnly libs.lombok
 	runtimeOnly libs.h2
-	runtimeOnly libs.mysql.connector.j
 	runtimeOnly libs.r2dbc.h2
     annotationProcessor libs.mapstruct.processor
 	annotationProcessor Spring.boot.configurationProcessor
