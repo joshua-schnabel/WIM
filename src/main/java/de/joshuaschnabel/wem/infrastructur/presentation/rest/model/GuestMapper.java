@@ -2,11 +2,10 @@ package de.joshuaschnabel.wem.infrastructur.presentation.rest.model;
 
 import java.util.Optional;
 import java.util.function.Function;
-
 import de.joshuaschnabel.wem.domain.guest.Guest;
 import de.joshuaschnabel.wem.domain.guest.GuestId;
+import de.joshuaschnabel.wem.domain.guest.GuestName;
 import de.joshuaschnabel.wem.domain.guest.GuestType;
-import de.joshuaschnabel.wem.domain.guest.Name;
 
 public class GuestMapper {
 
@@ -20,11 +19,11 @@ public class GuestMapper {
 					.type(this.mapTypeToDTO(dto)).build();
 		}
 
-		private Optional<Name> mapToName(GuestDTO dto) {
+		private Optional<GuestName> mapToName(GuestDTO dto) {
 			if (dto.getLastmame() == null || dto.getFirstname() == null) {
 				return Optional.empty();
 			}
-			return Optional.of(Name.of(dto.getFirstname(), dto.getLastmame()));
+			return Optional.of(GuestName.of(dto.getFirstname(), dto.getLastmame()));
 		}
 
 		private GuestType mapTypeToDTO(GuestDTO guest) {

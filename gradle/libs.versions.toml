@@ -2,13 +2,13 @@
 
 [plugins]
 
-org-springframework-boot = { id = "org.springframework.boot", version = "3.0.2" }
+org-springframework-boot = { id = "org.springframework.boot", version = "3.0.4" }
 
 io-spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.0" }
 
-com-github-ben-manes-versions = { id = "com.github.ben-manes.versions", version = "0.45.0" }
+com-github-ben-manes-versions = { id = "com.github.ben-manes.versions", version = "0.46.0" }
 
-org-owasp-dependencycheck = { id = "org.owasp.dependencycheck", version = "8.0.2" }
+org-owasp-dependencycheck = { id = "org.owasp.dependencycheck", version = "8.1.2" }
 
 [libraries]
 
@@ -27,3 +27,7 @@ h2 = "com.h2database:h2:_"
 mysql-connector-j = "com.mysql:mysql-connector-j:_"
 
 r2dbc-h2 = "io.r2dbc:r2dbc-h2:_"
+
+mapstruct-processor = "org.mapstruct:mapstruct-processor:_"
+
+mapstruct = "org.mapstruct:mapstruct:_"

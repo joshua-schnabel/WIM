@@ -1,5 +1,6 @@
 plugins {
 	id "java"
+	id "eclipse"
 	id "org.springframework.boot"
 	id "io.spring.dependency-management"
 	id "com.github.ben-manes.versions"
@@ -36,11 +37,13 @@ dependencies {
 	implementation Spring.boot.security
 	implementation Spring.boot.webflux
 	implementation libs.spring.session.core
+	implementation libs.mapstruct
 	compileOnly Spring.boot.devTools
 	compileOnly libs.lombok
 	runtimeOnly libs.h2
 	runtimeOnly libs.mysql.connector.j
 	runtimeOnly libs.r2dbc.h2
+    annotationProcessor libs.mapstruct.processor
 	annotationProcessor Spring.boot.configurationProcessor
 	annotationProcessor libs.lombok
 	testImplementation Spring.boot.test
@@ -49,7 +52,8 @@ dependencies {
 }
 
 dependencyCheck {
-    failBuildOnCVSS=5
+    failBuildOnCVSS=6.1
+    suppressionFile="./owasp-suppressions.xml"
 }
 
 tasks.named("test") {

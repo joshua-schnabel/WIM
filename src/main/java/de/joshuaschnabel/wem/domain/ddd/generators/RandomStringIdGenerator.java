@@ -2,10 +2,8 @@ package de.joshuaschnabel.wem.domain.ddd.generators;
 
 import java.nio.ByteBuffer;
 import java.util.Random;
-
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.codec.digest.DigestUtils;
-
 import de.joshuaschnabel.wem.domain.ddd.objects.AggregateId;
 
 public abstract class RandomStringIdGenerator<Id extends AggregateId<String>>

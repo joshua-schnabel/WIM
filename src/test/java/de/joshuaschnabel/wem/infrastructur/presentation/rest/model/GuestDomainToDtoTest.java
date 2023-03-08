@@ -2,18 +2,15 @@ package de.joshuaschnabel.wem.infrastructur.presentation.rest.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import java.util.Optional;
-
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 import de.joshuaschnabel.wem.domain.guest.Guest;
 import de.joshuaschnabel.wem.domain.guest.GuestId;
+import de.joshuaschnabel.wem.domain.guest.GuestName;
 import de.joshuaschnabel.wem.domain.guest.GuestType;
-import de.joshuaschnabel.wem.domain.guest.Name;
 import de.joshuaschnabel.wem.domain.invitation.InvitationId;
 
 @Tag("UnitTest")
@@ -24,7 +21,7 @@ class GuestDomainToDtoTest {
 	@DisplayName("Test full DomainObject to DTO mapping")
 	void fullDTO() {
 		final var guest = Guest.builder().id(GuestId.of("abcdefgh2345abcd"))
-				.name(Optional.of(Name.of("Hans", "Wurst")))
+				.name(Optional.of(GuestName.of("Hans", "Wurst")))
 				.type(GuestType.PrimaryGuest)
 				.invitation(Optional.of(InvitationId.of("testID"))).build();
 		final var result = GuestMapper.mapToDTO.apply(guest);
@@ -70,7 +67,7 @@ class GuestDomainToDtoTest {
 	@DisplayName("Test missing type DomainObject to DTO mapping")
 	void missingTypeDTO() {
 		final var guest = Guest.builder().id(GuestId.of("abcdefgh2345abcd"))
-				.name(Optional.of(Name.of("Hans", "Wurst")))
+				.name(Optional.of(GuestName.of("Hans", "Wurst")))
 				.invitation(Optional.of(InvitationId.of("abcdefgh2345abcd")))
 				.build();
 

@@ -15,25 +15,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import de.joshuaschnabel.wem.domain.guest.GuestRepository;
+import de.joshuaschnabel.wem.domain.invitation.InvitationRepository;
 import de.joshuaschnabel.wem.infrastructur.presentation.rest.error.ElementNotFoundException;
-import de.joshuaschnabel.wem.infrastructur.presentation.rest.hatos.GuestHatosDecorator;
+import de.joshuaschnabel.wem.infrastructur.presentation.rest.hatos.InvitationHatosDecorator;
 import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.GuestDTO;
 import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.GuestMapper;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping(path = "api/guests")
-public class GuestController {
+@RequestMapping(path = "api/invitations")
+public class InvitationController {
 
     @Autowired
-    private GuestRepository guestRepository;
+    private InvitationRepository invitationRepository;
 
-    private final GuestHatosDecorator hatosDecorator = new GuestHatosDecorator();
+    private final InvitationHatosDecorator hatosDecorator = new InvitationHatosDecorator();
 
     @GetMapping(path = "/")
     public Mono<CollectionModel<EntityModel<GuestDTO>>> all() {
-        final var elements = this.guestRepository.getAll().map(GuestMapper.mapToDTO);
+        final var elements = this.invitationRepository.getAll().map(GuestMapper.mapToDTO);
         return this.hatosDecorator.addListLinks(elements);
     }
 

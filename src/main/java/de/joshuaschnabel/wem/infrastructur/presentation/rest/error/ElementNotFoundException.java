@@ -2,10 +2,8 @@ package de.joshuaschnabel.wem.infrastructur.presentation.rest.error;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
 import lombok.Builder;
 import lombok.Getter;
 

@@ -38,8 +38,7 @@ class RandomStringIdGeneratorTest {
 		assertThat(generator.validate("abcdefgh2345abcd")).isTrue();
 		assertThat(generator.validate("abc#efgh2345abcd")).isFalse();
 		assertThat(generator.validate("abc")).isFalse();
-		assertThat(generator.getSpecification())
-				.isEqualTo("String 16 alphanumeric");
+		assertThat(generator.getSpecification()).isEqualTo("String 16 alphanumeric");
 	}
 
 }

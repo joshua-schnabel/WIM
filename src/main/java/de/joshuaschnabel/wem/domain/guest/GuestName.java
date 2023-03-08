@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor(staticName = "of")
-public class Name extends ValueObject {
+public class GuestName extends ValueObject {
 
   private final String firstname;
   private final String lastname;

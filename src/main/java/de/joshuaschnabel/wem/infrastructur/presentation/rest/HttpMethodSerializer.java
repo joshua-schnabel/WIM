@@ -1,9 +1,7 @@
 package de.joshuaschnabel.wem.infrastructur.presentation.rest;
 
 import java.io.IOException;
-
 import org.springframework.http.HttpMethod;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;

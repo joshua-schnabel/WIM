@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface DeleteRepository<I extends AggregateRootId<?>, A extends AggregateRoot<I>> {
 
-  public Mono<Void> remove(A aggregate);
+	public Mono<Boolean> remove(A aggregate);
 
-  public Mono<Void> remove(I identity);
+	public Mono<Boolean> remove(I identity);
 }
