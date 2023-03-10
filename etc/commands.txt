@@ -1,3 +1,4 @@
 gradlew dependencyCheckAnalyze
-gradlew refreshVersionsMigrate --mode=VersionCatalogAndVersionProperties
 gradlew dependencyUpdates
+
+https://github.com/mikepenz/gradle-dependency-submission

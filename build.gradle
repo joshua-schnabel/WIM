@@ -1,12 +1,12 @@
 plugins {
 	id "java"
 	id "eclipse"
-	id "org.springframework.boot"
-	id "io.spring.dependency-management"
-	id "com.github.ben-manes.versions"
-	id "org.owasp.dependencycheck"
+	alias(spring.plugins.boot)
+	alias(libs.plugins.sdpmg)
+	alias(libs.plugins.versions)
+	alias(libs.plugins.dependencycheck)
 }
-
+ 
 group = "de.joshuaschnabel"
 version = "0.0.1-SNAPSHOT"
 sourceCompatibility = "17"
@@ -25,29 +25,31 @@ repositories {
 }
 
 dependencies {
+	implementation platform(spring.boot.dependencies)
 	implementation libs.commons.codec
-	implementation libs.spring.hateoas.siren
-	implementation Spring.boot.actuator
-	implementation libs.spring.data.r2dbc
-	implementation (libs.spring.hateoas) {
+	implementation libs.hateoas.siren
+	implementation libs.mapstruct
+	compileOnly libs.lombok
+    annotationProcessor libs.mapstruct.processor
+	annotationProcessor libs.lombok
+	//spring
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation ('org.springframework.boot:spring-boot-starter-hateoas') {
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-web"
 	}
-	implementation libs.spring.boot.starter.reactor.netty
-	implementation Spring.boot.oauth2Client
-	implementation Spring.boot.security
-	implementation Spring.boot.webflux
-	implementation libs.spring.session.core
-	implementation libs.mapstruct
-	compileOnly Spring.boot.devTools
-	compileOnly libs.lombok
-	runtimeOnly libs.h2
-	runtimeOnly libs.r2dbc.h2
-    annotationProcessor libs.mapstruct.processor
-	annotationProcessor Spring.boot.configurationProcessor
-	annotationProcessor libs.lombok
-	testImplementation Spring.boot.test
-	testImplementation Spring.reactor.test
-	testImplementation Spring.security.spring_security_test
+	implementation 'org.springframework.boot:spring-boot-starter-reactor-netty'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.session:spring-session-core'
+	compileOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'io.r2dbc:r2dbc-h2'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 dependencyCheck {
