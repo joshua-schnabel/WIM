@@ -5,6 +5,7 @@ plugins {
 	alias(libs.plugins.sdpmg)
 	alias(libs.plugins.versions)
 	alias(libs.plugins.dependencycheck)
+	alias(libs.plugins.eclipse.apt)
 }
  
 group = "de.joshuaschnabel"
@@ -30,8 +31,8 @@ dependencies {
 	implementation libs.hateoas.siren
 	implementation libs.mapstruct
 	compileOnly libs.lombok
-    annotationProcessor libs.mapstruct.processor
 	annotationProcessor libs.lombok
+    annotationProcessor libs.mapstruct.processor
 	//spring
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'

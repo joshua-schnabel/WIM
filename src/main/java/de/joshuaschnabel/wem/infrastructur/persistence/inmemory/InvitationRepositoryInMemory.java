@@ -5,10 +5,11 @@ import java.util.Map;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import de.joshuaschnabel.wem.domain.invitation.Invitation;
-import de.joshuaschnabel.wem.domain.invitation.InvitationCode;
+import de.joshuaschnabel.wem.domain.invitation.Invitation.InvitationCode;
 import de.joshuaschnabel.wem.domain.invitation.InvitationId;
 import de.joshuaschnabel.wem.domain.invitation.InvitationRepository;
 import de.joshuaschnabel.wem.domain.invitation.SpecialRequest;
+import de.joshuaschnabel.wem.domain.invitation.SpecialRequest.Request;
 import de.joshuaschnabel.wem.domain.invitation.SpecialRequest.SpecialRequestId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,13 +22,13 @@ public class InvitationRepositoryInMemory implements InvitationRepository {
 
     public InvitationRepositoryInMemory() {
         final var id1 = InvitationId.getNewId();
-        final var sp1 =
-                SpecialRequest.builder().id(new SpecialRequestId(1234)).request("Kannst du einen Kuchen mitbringen?").build();
+        final var sp1 = SpecialRequest.builder().id(new SpecialRequestId(1234))
+                .request(new Request("Kannst du einen Kuchen mitbringen?")).build();
         final var id2 = InvitationId.getNewId();
         final var sp2 = SpecialRequest.builder().id(new SpecialRequestId(1212))
-                .request("Kannst du einen anderen Kuchen mitbringen?").build();
-        var i1 = Invitation.builder().id(id1).invitationCode(InvitationCode.of("code1xx")).specialRequest(sp1).build();
-        var i2 = Invitation.builder().id(id2).invitationCode(InvitationCode.of("code2xx")).specialRequest(sp2).build();
+                .request(new Request("Kannst du einen anderen Kuchen mitbringen?")).build();
+        var i1 = Invitation.builder().id(id1).invitationCode(new InvitationCode("code1xx")).specialRequest(sp1).build();
+        var i2 = Invitation.builder().id(id2).invitationCode(new InvitationCode("code2xx")).specialRequest(sp2).build();
         this.map.put(id1, i1);
         this.map.put(id2, i2);
     }

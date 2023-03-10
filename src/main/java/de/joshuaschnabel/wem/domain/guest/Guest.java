@@ -5,6 +5,7 @@ import de.joshuaschnabel.wem.domain.DomainErrors;
 import de.joshuaschnabel.wem.domain.ddd.objects.AggregateRoot;
 import de.joshuaschnabel.wem.domain.ddd.objects.IllegalObjectModificationException;
 import de.joshuaschnabel.wem.domain.invitation.InvitationId;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @Builder
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Guest extends AggregateRoot<GuestId> {
 
@@ -26,6 +28,13 @@ public class Guest extends AggregateRoot<GuestId> {
     @Builder.Default
     private Optional<InvitationId> invitation = Optional.empty();
 
+    public Guest(GuestId id, GuestName name, GuestType type, InvitationId invitation) {
+        this.id = id;
+        this.name = Optional.of(name);
+        this.type = type;
+        this.invitation = Optional.of(invitation);
+    }
+
     @Override
     protected void setIdInternal(GuestId id) {
         this.id = id;
@@ -36,7 +45,7 @@ public class Guest extends AggregateRoot<GuestId> {
         return this;
     }
 
-    public void setName(GuestName name) {
+    public void setName2(GuestName name) {
         if (this.type == GuestType.PrimaryGuest) {
             throw new IllegalObjectModificationException(DomainErrors.GUEST_name_cannot_be_changed_afterwards);
         }

@@ -18,6 +18,7 @@ public class GuestId extends AggregateRootId<String> {
     }
 
     public static GuestId of(String id) {
+        id = id.toLowerCase();
         if (!generator.validate(id)) {
             throw new IllegalArgumentException("Id should be " + generator.getSpecification());
         }
@@ -30,7 +31,7 @@ public class GuestId extends AggregateRootId<String> {
 
     @Override
     public String toString() {
-        return "GuestId [id()=" + this.get() + "]";
+        return "GuestId [id=" + this.get() + "]";
     }
 
 }

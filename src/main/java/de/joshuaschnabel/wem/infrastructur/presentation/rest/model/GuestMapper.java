@@ -1,74 +1,40 @@
 package de.joshuaschnabel.wem.infrastructur.presentation.rest.model;
 
 import java.util.Optional;
-import java.util.function.Function;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import de.joshuaschnabel.wem.domain.guest.Guest;
 import de.joshuaschnabel.wem.domain.guest.GuestId;
-import de.joshuaschnabel.wem.domain.guest.GuestName;
-import de.joshuaschnabel.wem.domain.guest.GuestType;
+import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.dto.GuestDTO;
 
-public class GuestMapper {
+@Mapper(uses = {GuestNameMapper.class})
+public interface GuestMapper {
 
-	private static final class MapperDTOToGuest
-			implements
-				Function<GuestDTO, Guest> {
-		@Override
-		public Guest apply(GuestDTO dto) {
-			final var id = mapDtoIdToGuest.apply(dto.getId());
-			return Guest.builder().id(id).name(this.mapToName(dto))
-					.type(this.mapTypeToDTO(dto)).build();
-		}
+    @Mapping(target = "invitation", ignore = true)
+    @Mapping(source = "guestType", target = "type")
+    @Mapping(source = "name", target = "name", qualifiedByName = "wrap")
+    Guest guestDTOTOguest(GuestDTO guestDTO);
 
-		private Optional<GuestName> mapToName(GuestDTO dto) {
-			if (dto.getLastmame() == null || dto.getFirstname() == null) {
-				return Optional.empty();
-			}
-			return Optional.of(GuestName.of(dto.getFirstname(), dto.getLastmame()));
-		}
+    public default String guestIdToString(GuestId value) {
+        return value.get();
+    }
 
-		private GuestType mapTypeToDTO(GuestDTO guest) {
-			return GuestType.valueOf(guest.getGuestType());
-		}
-	}
+    @Mapping(source = "type", target = "guestType")
+    @Mapping(source = "name", target = "name", qualifiedByName = "unwrap")
+    GuestDTO guestTOguestDTO(Guest guest);
 
-	private static final class MapperGuestToDTO
-			implements
-				Function<Guest, GuestDTO> {
-		@Override
-		public GuestDTO apply(Guest guest) {
-			return GuestDTO.of(this.mapIdToDTO(guest),
-					this.mapFirstnameToDTO(guest), this.mapLastnameToDTO(guest),
-					this.mapTypeToDTO(guest));
-		}
+    public default GuestId StringToGuestId(String value) {
+        return GuestId.of(value);
+    }
 
-		private String mapFirstnameToDTO(Guest guest) {
-			if (guest.getName().isPresent()) {
-				return guest.getName().get().getFirstname();
-			}
-			return null;
-		}
+    @Named("unwrap")
+    default <T> T unwrap(Optional<T> optional) {
+        return optional.orElse(null);
+    }
 
-		private String mapIdToDTO(Guest guest) {
-			return guest.getId().get();
-		}
-
-		private String mapLastnameToDTO(Guest guest) {
-			if (guest.getName().isPresent()) {
-				return guest.getName().get().getLastname();
-			}
-			return null;
-		}
-
-		private String mapTypeToDTO(Guest guest) {
-			if (guest.getType() == null) {
-				throw new IllegalStateException("Type not defind");
-			}
-			return guest.getType().name();
-		}
-	}
-
-	public static Function<Guest, GuestDTO> mapToDTO = new MapperGuestToDTO();
-	public static Function<String, GuestId> mapDtoIdToGuest = GuestId::of;
-	public static Function<GuestDTO, Guest> mapDtoToGuest = new MapperDTOToGuest();
-
+    @Named("wrap")
+    default <T> Optional<T> wrap(T value) {
+        return Optional.ofNullable(value);
+    }
 }

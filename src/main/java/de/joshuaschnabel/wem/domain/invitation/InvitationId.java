@@ -19,6 +19,7 @@ public class InvitationId extends AggregateRootId<String> {
     }
 
     public static InvitationId of(String id) {
+        id = id.toLowerCase();
         if (!generator.validate(id)) {
             throw new IllegalArgumentException("Id should be " + generator.getSpecification());
         }

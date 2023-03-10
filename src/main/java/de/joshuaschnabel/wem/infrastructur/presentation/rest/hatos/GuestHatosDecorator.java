@@ -7,7 +7,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
 import de.joshuaschnabel.wem.infrastructur.presentation.rest.controllers.GuestController;
-import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.GuestDTO;
+import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.dto.GuestDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import de.joshuaschnabel.wem.domain.guest.GuestId;
 import de.joshuaschnabel.wem.domain.guest.GuestRepository;
-import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.GuestDTO;
+import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.dto.GuestDTO;
 
 @SpringBootTest
 @AutoConfigureWebTestClient

@@ -9,9 +9,14 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 public class AggregateId<ValueType> {
 
-  private final ValueType value;
+    private final ValueType value;
 
-  public ValueType get() {
-    return this.value;
-  }
+    public ValueType get() {
+        return this.value;
+    }
+
+    @Override
+    public String toString() {
+        return this.value.toString();
+    }
 }

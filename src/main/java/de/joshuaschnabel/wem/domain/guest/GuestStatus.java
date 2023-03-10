@@ -2,6 +2,7 @@ package de.joshuaschnabel.wem.domain.guest;
 
 import de.joshuaschnabel.wem.domain.ddd.objects.Aggregate;
 import de.joshuaschnabel.wem.domain.ddd.objects.AggregateId;
+import de.joshuaschnabel.wem.domain.ddd.type.BasicType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -10,6 +11,14 @@ import lombok.ToString;
 @ToString
 @Builder
 public class GuestStatus extends Aggregate<GuestStatus.GuestStatusId> {
+
+    public static class GuestStatusAccepted extends BasicType<Boolean> {
+
+        public GuestStatusAccepted(Boolean value) {
+            super(value);
+        }
+
+    }
 
     public static class GuestStatusId extends AggregateId<Integer> {
 
@@ -23,5 +32,5 @@ public class GuestStatus extends Aggregate<GuestStatus.GuestStatusId> {
     private GuestId guest;
 
     @Builder.Default
-    private Boolean accepted = false;
+    private GuestStatusAccepted accepted = new GuestStatusAccepted(false);
 }

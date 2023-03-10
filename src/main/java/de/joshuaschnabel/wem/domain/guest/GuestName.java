@@ -7,10 +7,15 @@ import lombok.ToString;
 
 @Getter
 @ToString
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor
 public class GuestName extends ValueObject {
 
-  private final String firstname;
-  private final String lastname;
+    public static GuestName of(String firstname, String lastname) {
+        return new GuestName(firstname, lastname);
+    }
+
+    private final String firstname;
+
+    private final String lastname;
 
 }

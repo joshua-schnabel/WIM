@@ -2,6 +2,7 @@ package de.joshuaschnabel.wem.domain.invitation;
 
 import de.joshuaschnabel.wem.domain.ddd.objects.Aggregate;
 import de.joshuaschnabel.wem.domain.ddd.objects.AggregateId;
+import de.joshuaschnabel.wem.domain.ddd.type.BasicType;
 import de.joshuaschnabel.wem.domain.invitation.SpecialRequest.SpecialRequestId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,25 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public class SpecialRequest extends Aggregate<SpecialRequestId> {
 
+    public static class Request extends BasicType<String> {
+        public Request(String value) {
+            super(value);
+        }
+    }
+
+    public static class RequestAnser extends BasicType<String> {
+
+        public RequestAnser(String value) {
+            super(value);
+        }
+    }
+
+    public static class RequestStatus extends BasicType<Boolean> {
+        public RequestStatus(Boolean value) {
+            super(value);
+        }
+    }
+
     public static class SpecialRequestId extends AggregateId<Integer> {
 
         public SpecialRequestId(Integer value) {
@@ -23,10 +43,10 @@ public class SpecialRequest extends Aggregate<SpecialRequestId> {
 
     private final SpecialRequestId id;
 
-    private final String request;
+    private final Request request;
 
-    private final Boolean accepted;
+    private final RequestStatus accepted;
 
-    private final String answer;
+    private final RequestAnser answer;
 
 }

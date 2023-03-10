@@ -33,7 +33,8 @@ import de.joshuaschnabel.wem.domain.guest.GuestName;
 import de.joshuaschnabel.wem.domain.guest.GuestRepository;
 import de.joshuaschnabel.wem.domain.guest.GuestType;
 import de.joshuaschnabel.wem.infrastructur.presentation.rest.controllers.GuestController;
-import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.GuestDTO;
+import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.dto.GuestDTO;
+import de.joshuaschnabel.wem.infrastructur.presentation.rest.model.dto.GuestDTO.GuestNameDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -77,12 +78,13 @@ class GuestControllerTest {
     @DisplayName("Test create guest endpoint")
     void createGuests() {
         when(this.repo.store(any(Guest.class))).thenReturn(Mono.just(GUEST1));
-        var user = GuestDTO.of("nbqwy3dpgezdgmjs", "Hans", "Wurst", "PrimaryGuest");
+        var user = GuestDTO.builder().id("nbqwy3dpgezdgmjs").name(GuestNameDTO.builder().firstname("Hans").lastname("Hans").build())
+                .guestType("PrimaryGuest").build();
         EntityModel<GuestDTO> userEM = EntityModel.of(user);
         var guest = this.guestController.newGuest(Mono.just(userEM)).block();
         verify(this.repo, times(1)).store(any(Guest.class));
         assertThat(guest.getContent().getId()).isEqualTo("nbqwy3dpgezdgmjs");
-        assertThat(guest.getContent().getFirstname()).isEqualTo("Hans");
+        assertThat(guest.getContent().getName().getFirstname()).isEqualTo("Hans");
         assertThat(guest.getContent().getGuestType()).isEqualTo("PrimaryGuest");
     }
 
@@ -113,7 +115,7 @@ class GuestControllerTest {
 			.thenReturn(Mono.just(GUEST1));
 		final var guest = this.guestController.findOne("nbqwy3dpgezdgmjs").block();
 		assertThat(guest.getContent().getId()).isEqualTo("nbqwy3dpgezdgmjs");
-		assertThat(guest.getContent().getFirstname()).isEqualTo("Hans");
+		assertThat(guest.getContent().getName().getFirstname()).isEqualTo("Hans");
 		assertThat(guest.getContent().getGuestType()).isEqualTo("PrimaryGuest");
 		assertThat(guest.getLinks())
 			.areAtLeastOne(this.hasLink("self", "/api/guests/nbqwy3dpgezdgmjs"))
@@ -146,19 +148,21 @@ class GuestControllerTest {
     @DisplayName("Test create guest endpoint")
     void updateGuests() {
         when(this.repo.store(any(Guest.class))).thenReturn(Mono.just(GUEST1));
-        var user = GuestDTO.of("nbqwy3dpgezdgmjs", "Hans", "Wurst", "PrimaryGuest");
+        var user = GuestDTO.builder().id("nbqwy3dpgezdgmjs").name(GuestNameDTO.builder().firstname("Hans").lastname("Hans").build())
+                .guestType("PrimaryGuest").build();
         EntityModel<GuestDTO> userEM = EntityModel.of(user);
         var guest = this.guestController.updateGuest(Mono.just(userEM), "nbqwy3dpgezdgmjs").block();
         verify(this.repo, times(1)).store(any(Guest.class));
         assertThat(guest.getContent().getId()).isEqualTo("nbqwy3dpgezdgmjs");
-        assertThat(guest.getContent().getFirstname()).isEqualTo("Hans");
+        assertThat(guest.getContent().getName().getFirstname()).isEqualTo("Hans");
         assertThat(guest.getContent().getGuestType()).isEqualTo("PrimaryGuest");
     }
 
     @Test
     @DisplayName("Test create guest endpoint")
     void updateGuestsWithError() {
-        var user = GuestDTO.of("nbqwy3dpgezdgmjs", "Hans", "Wurst", "PrimaryGuest");
+        var user = GuestDTO.builder().id("nbqwy3dpgezdgmjs")
+                .name(GuestNameDTO.builder().firstname("Hans").lastname("Hans").build()).guestType("PrimaryGuest").build();
         EntityModel<GuestDTO> userEM = EntityModel.of(user);
         assertThatThrownBy(() -> {
             this.guestController.updateGuest(Mono.just(userEM), "nsqwy3dpgezdgmjs").block();
