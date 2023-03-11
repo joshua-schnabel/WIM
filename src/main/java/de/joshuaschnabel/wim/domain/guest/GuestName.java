@@ -1,0 +1,21 @@
+package de.joshuaschnabel.wim.domain.guest;
+
+import de.joshuaschnabel.wim.domain.ddd.objects.ValueObject;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+
+@Getter
+@ToString
+@AllArgsConstructor
+public class GuestName extends ValueObject {
+
+    public static GuestName of(String firstname, String lastname) {
+        return new GuestName(firstname, lastname);
+    }
+
+    private final String firstname;
+
+    private final String lastname;
+
+}
