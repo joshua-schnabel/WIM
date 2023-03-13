@@ -1,6 +1,7 @@
 package de.joshuaschnabel.wim.domain.guest;
 
 import de.joshuaschnabel.wim.domain.ddd.objects.ValueObject;
+import de.joshuaschnabel.wim.domain.ddd.type.BasicType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -10,12 +11,28 @@ import lombok.ToString;
 @AllArgsConstructor
 public class GuestName extends ValueObject {
 
-    public static GuestName of(String firstname, String lastname) {
-        return new GuestName(firstname, lastname);
-    }
+	public class FirstName extends BasicType<String> {
 
-    private final String firstname;
+		public FirstName(String value) {
+			super(value);
+		}
 
-    private final String lastname;
+	}
+
+	public class LastName extends BasicType<String> {
+
+		public LastName(String value) {
+			super(value);
+		}
+
+	}
+
+	public static GuestName of(FirstName firstname, LastName lastname) {
+		return new GuestName(firstname, lastname);
+	}
+
+	private final FirstName firstname;
+
+	private final LastName lastname;
 
 }
