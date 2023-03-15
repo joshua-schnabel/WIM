@@ -11,7 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class GuestName extends ValueObject {
 
-	public class FirstName extends BasicType<String> {
+	public static class FirstName extends BasicType<String> {
 
 		public FirstName(String value) {
 			super(value);
@@ -19,7 +19,7 @@ public class GuestName extends ValueObject {
 
 	}
 
-	public class LastName extends BasicType<String> {
+	public static class LastName extends BasicType<String> {
 
 		public LastName(String value) {
 			super(value);

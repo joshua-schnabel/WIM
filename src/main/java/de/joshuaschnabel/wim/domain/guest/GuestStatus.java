@@ -3,6 +3,7 @@ package de.joshuaschnabel.wim.domain.guest;
 import de.joshuaschnabel.wim.domain.ddd.objects.Aggregate;
 import de.joshuaschnabel.wim.domain.ddd.objects.AggregateId;
 import de.joshuaschnabel.wim.domain.ddd.type.BasicType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -10,27 +11,31 @@ import lombok.ToString;
 @Getter
 @ToString
 @Builder
+@AllArgsConstructor
 public class GuestStatus extends Aggregate<GuestStatus.GuestStatusId> {
 
-    public static class GuestStatusAccepted extends BasicType<Boolean> {
+	public static class GuestStatusAccepted extends BasicType<Boolean> {
 
-        public GuestStatusAccepted(Boolean value) {
-            super(value);
-        }
+		public static GuestStatusAccepted YES = new GuestStatusAccepted(true);
 
-    }
+		public static GuestStatusAccepted NO = new GuestStatusAccepted(false);
 
-    public static class GuestStatusId extends AggregateId<Integer> {
+		public GuestStatusAccepted(Boolean value) {
+			super(value);
+		}
+	}
 
-        public GuestStatusId(Integer value) {
-            super(value);
-        }
-    }
+	public static class GuestStatusId extends AggregateId<Integer> {
 
-    private final GuestStatusId id;
+		public GuestStatusId(Integer value) {
+			super(value);
+		}
+	}
 
-    private GuestId guest;
+	private final GuestStatusId id;
 
-    @Builder.Default
-    private GuestStatusAccepted accepted = new GuestStatusAccepted(false);
+	private GuestId guest;
+
+	@Builder.Default
+	private GuestStatusAccepted accepted = new GuestStatusAccepted(false);
 }

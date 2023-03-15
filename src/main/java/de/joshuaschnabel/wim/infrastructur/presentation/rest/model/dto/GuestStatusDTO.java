@@ -11,11 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
-public class GuestDTO extends RepresentationModel<GuestDTO> {
-
-	private String id;
-	private String firstname;
-	private String lastname;
-	private String guestType;
-
+public class GuestStatusDTO extends RepresentationModel<GuestStatusDTO> {
+	private String guestId;
+	private Boolean accepted;
 }

@@ -2,12 +2,15 @@ package de.joshuaschnabel.wim.infrastructur.persistence.inmemory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
 import de.joshuaschnabel.wim.domain.guest.Guest;
 import de.joshuaschnabel.wim.domain.guest.GuestId;
 import de.joshuaschnabel.wim.domain.guest.GuestName;
+import de.joshuaschnabel.wim.domain.guest.GuestName.FirstName;
+import de.joshuaschnabel.wim.domain.guest.GuestName.LastName;
 import de.joshuaschnabel.wim.domain.guest.GuestRepository;
 import de.joshuaschnabel.wim.domain.guest.GuestType;
 import reactor.core.publisher.Flux;
@@ -23,18 +26,12 @@ public class GuestRepositoryInMemory implements GuestRepository {
 		final var id1 = GuestId.getNewId();
 		final var id2 = GuestId.getNewId();
 		final var id3 = GuestId.getNewId();
-		this.map.put(id1,
-				Guest.builder().id(id1)
-						.name(Optional.of(GuestName.of("John", "Doe")))
-						.type(GuestType.PrimaryGuest).build());
-		this.map.put(id2,
-				Guest.builder().id(id2)
-						.name(Optional.of(GuestName.of("Jane", "Doe")))
-						.type(GuestType.PrimaryGuest).build());
-		this.map.put(id3,
-				Guest.builder().id(id3)
-						.name(Optional.of(GuestName.of("Max", "Mustermann")))
-						.type(GuestType.PrimaryGuest).build());
+		this.map.put(id1, Guest.builder().id(id1).name(GuestName.of(new FirstName("John"), new LastName("Doe")))
+				.type(GuestType.PrimaryGuest).build());
+		this.map.put(id2, Guest.builder().id(id2).name(GuestName.of(new FirstName("Jane"), new LastName("Doe")))
+				.type(GuestType.PrimaryGuest).build());
+		this.map.put(id3, Guest.builder().id(id3).name(GuestName.of(new FirstName("Max"), new LastName("Mustermann")))
+				.type(GuestType.PrimaryGuest).build());
 		System.out.println(this.map);
 	}
 

@@ -15,38 +15,38 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public class SpecialRequest extends Aggregate<SpecialRequestId> {
 
-    public static class Request extends BasicType<String> {
-        public Request(String value) {
-            super(value);
-        }
-    }
+	public static class Request extends BasicType<String> {
+		public Request(String value) {
+			super(value);
+		}
+	}
 
-    public static class RequestAnser extends BasicType<String> {
+	public static class RequestAnser extends BasicType<String> {
 
-        public RequestAnser(String value) {
-            super(value);
-        }
-    }
+		public RequestAnser(String value) {
+			super(value);
+		}
+	}
 
-    public static class RequestStatus extends BasicType<Boolean> {
-        public RequestStatus(Boolean value) {
-            super(value);
-        }
-    }
+	public static class RequestStatus extends BasicType<Boolean> {
+		public RequestStatus(Boolean value) {
+			super(value);
+		}
+	}
 
-    public static class SpecialRequestId extends AggregateId<Integer> {
+	public static class SpecialRequestId extends AggregateId<Integer> {
 
-        public SpecialRequestId(Integer value) {
-            super(value);
-        }
-    }
+		public SpecialRequestId(Integer value) {
+			super(value);
+		}
+	}
 
-    private final SpecialRequestId id;
+	private final SpecialRequestId id;
 
-    private final Request request;
+	private final Request request;
 
-    private final RequestStatus accepted;
+	private final RequestStatus accepted;
 
-    private final RequestAnser answer;
+	private final RequestAnser answer;
 
 }

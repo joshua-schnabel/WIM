@@ -1,6 +1,7 @@
 package de.joshuaschnabel.wim.domain.guest;
 
 import java.util.Optional;
+
 import de.joshuaschnabel.wim.domain.DomainErrors;
 import de.joshuaschnabel.wim.domain.ddd.objects.AggregateRoot;
 import de.joshuaschnabel.wim.domain.ddd.objects.IllegalObjectModificationException;
@@ -11,44 +12,59 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@Getter
 @ToString
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Guest extends AggregateRoot<GuestId> {
 
-    private GuestId id;
+	@Getter
+	private GuestId id;
 
-    @Builder.Default
-    private Optional<GuestName> name = Optional.empty();
+	private GuestName name;
 
-    private final GuestType type;
+	@Getter
+	private final GuestType type;
 
-    @Builder.Default
-    private Optional<InvitationId> invitation = Optional.empty();
+	@Getter
+	@Builder.Default
+	private Optional<InvitationId> invitation = Optional.empty();
 
-    public Guest(GuestId id, GuestName name, GuestType type, InvitationId invitation) {
-        this.id = id;
-        this.name = Optional.of(name);
-        this.type = type;
-        this.invitation = Optional.of(invitation);
-    }
+	public Guest(GuestId id, GuestName name, GuestType type, InvitationId invitation) {
+		this.id = id;
+		this.name = name;
+		this.type = type;
+		this.invitation = Optional.of(invitation);
+	}
 
-    @Override
-    protected void setIdInternal(GuestId id) {
-        this.id = id;
-    }
+	public Optional<GuestName> getName() {
+		return Optional.ofNullable(this.name);
+	}
 
-    protected Guest setInvitation(InvitationId id) {
-        this.invitation = Optional.of(id);
-        return this;
-    }
+	/**
+	 * Required because of mapstruct
+	 *
+	 * @return
+	 */
+	public GuestName getNameNullable() {
+		return this.name;
+	}
 
-    public void setName2(GuestName name) {
-        if (this.type == GuestType.PrimaryGuest) {
-            throw new IllegalObjectModificationException(DomainErrors.GUEST_name_cannot_be_changed_afterwards);
-        }
-        this.name = Optional.of(name);
-    }
+	@Override
+	protected void setIdInternal(GuestId id) {
+		this.id = id;
+	}
+
+	protected Guest setInvitation(InvitationId id) {
+		this.invitation = Optional.of(id);
+		return this;
+	}
+
+	public void setName(GuestName name) {
+		if (this.type == GuestType.PrimaryGuest) {
+			throw new IllegalObjectModificationException(DomainErrors.GUEST_name_cannot_be_changed_afterwards);
+		}
+		this.name = name;
+	};
+
 }

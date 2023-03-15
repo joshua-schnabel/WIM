@@ -1,28 +1,26 @@
 package de.joshuaschnabel.wim.infrastructur.presentation.rest.model.dto;
 
 import java.util.List;
+
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.RepresentationModel;
+
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.jackson.Jacksonized;
 
 @Data
 @Builder
 @Jacksonized
-public class InvitationDTO {
+@EqualsAndHashCode(callSuper = true)
+public class InvitationDTO extends RepresentationModel<InvitationDTO> {
 
-    @Data
-    @Builder
-    @Jacksonized
-    public static class GuestStatusDTO {
-        private String guestId;
-        private Boolean accepted;
-    }
-
-    private String id;
-    private String invitationCode;
-    private List<GuestStatusDTO> guestStati;
-    private String specialRequest;
-    private Boolean specialRequestAccepted;
-    private String specialRequestAnswer;
+	private String id;
+	private String invitationCode;
+	private String specialRequest;
+	private Boolean specialRequestAccepted;
+	private String specialRequestAnswer;
+	private List<EntityModel<GuestStatusDTO>> guestStatus;
 
 }
