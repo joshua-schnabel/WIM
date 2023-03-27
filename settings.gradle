@@ -15,7 +15,7 @@ dependencyResolutionManagement {
 			library('hateoas-siren', 'de.ingogriebsch.hateoas', 'spring-hateoas-siren').version('1.4.0-SNAPSHOT')
         }
         spring {
-            version('spring-boot', '3.0.4')
+            version('spring-boot', '3.0.5')
             plugin('boot', 'org.springframework.boot').versionRef('spring-boot')
         	library('boot-dependencies', 'org.springframework.boot', 'spring-boot-dependencies').versionRef('spring-boot')			
         }
