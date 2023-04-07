@@ -1,11 +1,9 @@
 package de.joshuaschnabel.wim.infrastructur.presentation.rest.controllers;
 
-import java.util.function.Function;
-
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.joshuaschnabel.wim.domain.guest.Guest;
 import de.joshuaschnabel.wim.domain.guest.GuestRepository;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.error.ElementNotFoundException;
-import de.joshuaschnabel.wim.infrastructur.presentation.rest.hatos.GuestHatosDecorator;
+import de.joshuaschnabel.wim.infrastructur.presentation.rest.mapper.GuestSirenMapper;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.GuestMapper;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.dto.GuestDTO;
 import reactor.core.publisher.Mono;
@@ -36,20 +33,21 @@ public class GuestController {
 	@Autowired
 	private GuestRepository guestRepository;
 
-	private final GuestHatosDecorator hatosDecorator = new GuestHatosDecorator();
+	private final GuestSirenMapper guestSirenMapper = new GuestSirenMapper();
 
 	@GetMapping(path = "/")
-	public Mono<CollectionModel<EntityModel<GuestDTO>>> all() {
-		final var elements = this.guestRepository.getAll().map(this.mapToGuest());
-		return this.hatosDecorator.addListLinks(elements);
+	public Mono<CollectionModel<RepresentationModel<?>>> all() {
+		final var elements = this.guestRepository.getAll();
+		return this.guestSirenMapper.map(elements);
 	}
 
 	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<EntityModel<GuestDTO>> createGuest(@RequestBody Mono<EntityModel<GuestDTO>> guestDTO) {
+	public Mono<RepresentationModel<?>> createGuest(@RequestBody Mono<GuestDTO> guestDTO) {
 		return guestDTO.flatMap(resource -> {
-			final var dto = this.mapToGuest(resource);
+			final var dto = this.guestSirenMapper.map(resource);
+			dto.initializeNew();
 			final var object = this.guestRepository.store(dto);
-			return this.hatosDecorator.addLinks(object.map(this.mapToGuest()));
+			return this.guestSirenMapper.map(object);
 		});
 	}
 
@@ -65,36 +63,25 @@ public class GuestController {
 	}
 
 	@GetMapping(path = "/{id}")
-	public Mono<EntityModel<GuestDTO>> findGuest(@PathVariable String id) {
+	public Mono<RepresentationModel<?>> findGuest(@PathVariable String id) {
 		final var guestId = this.mapper.StringToGuestId(id);
 		final var element = this.guestRepository.get(guestId)
 				// If Guest not found
 				.switchIfEmpty(Mono.error(ElementNotFoundException.builder().elementId(id)
-						.functionalErrorCode("guest_not_found").build()))
-				.map(this.mapToGuest());
-		return this.hatosDecorator.addLinks(element);
-	}
-
-	private Function<Guest, GuestDTO> mapToGuest() {
-		return x -> this.mapper.guestTOguestDTO(x);
-	}
-
-	private Guest mapToGuest(EntityModel<GuestDTO> resource) {
-		return this.mapper.guestDTOTOguest(resource.getContent());
+						.functionalErrorCode("guest_not_found").build()));
+		return this.guestSirenMapper.map(element);
 	}
 
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<EntityModel<GuestDTO>> updateGuest(@RequestBody Mono<EntityModel<GuestDTO>> guestDTO,
-			@PathVariable String id) {
+	public Mono<RepresentationModel<?>> updateGuest(@RequestBody Mono<GuestDTO> guestDTO, @PathVariable String id) {
 		final var guestId = this.mapper.StringToGuestId(id);
 		final var guest = guestDTO.flatMap(resource -> {
-			final var dto = this.mapToGuest(resource);
+			final var dto = this.guestSirenMapper.map(resource);
 			if (!guestId.equals(dto.getId())) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 			}
-			final var object = this.guestRepository.store(dto);
-			return object.map(this.mapToGuest());
+			return this.guestRepository.store(dto);
 		});
-		return this.hatosDecorator.addLinks(guest);
+		return this.guestSirenMapper.map(guest);
 	}
 }

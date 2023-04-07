@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.ingogriebsch.spring.hateoas.siren.SirenConfiguration;
 import de.ingogriebsch.spring.hateoas.siren.SirenMediaTypeConfiguration;
 
 @Configuration
@@ -21,4 +22,8 @@ public class SirenCustomConfiguration {
 		return objectMapper;
 	}
 
+	@Bean
+	public SirenConfiguration sirenConfiguration() {
+		return new SirenConfiguration().withEntityAndCollectionModelSubclassingEnabled(true);
+	}
 }

@@ -1,0 +1,19 @@
+$enable-rounded: false;
+$enable-gradients: false;
+$enable-shadows: true;
+$font-family-sans-serif: "amatic_sc";
+
+$default-shadow-wim: 0 0 15px 0px #555;
+
+$font-size-base: 1.25rem;
+$navbar-brand-font-size: $font-size-base * 1.5;
+$nav-link-font-size: $font-size-base * 1.25;
+
+$bs-body-font-size: $font-size-base * 1.25;
+
+:root {
+  --bs-body-font-weight: 700;
+  --bs-body-font-size: #{$bs-body-font-size} !important;
+}
+
+@import "~bootstrap/scss/bootstrap";

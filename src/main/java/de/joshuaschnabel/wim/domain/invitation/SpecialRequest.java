@@ -29,6 +29,10 @@ public class SpecialRequest extends Aggregate<SpecialRequestId> {
 	}
 
 	public static class RequestStatus extends BasicType<Boolean> {
+		public static RequestStatus YES = new RequestStatus(true);
+
+		public static RequestStatus NO = new RequestStatus(false);
+
 		public RequestStatus(Boolean value) {
 			super(value);
 		}

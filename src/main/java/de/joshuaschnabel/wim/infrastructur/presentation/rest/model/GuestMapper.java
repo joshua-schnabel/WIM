@@ -26,9 +26,13 @@ public interface GuestMapper {
 	@Mapping(source = "type", target = "guestType")
 	@Mapping(source = "nameNullable.firstname.value", target = "firstname")
 	@Mapping(source = "nameNullable.lastname.value", target = "lastname")
+	@Mapping(source = "invitation.present", target = "assigned")
 	GuestDTO guestTOguestDTO(Guest guest);
 
 	public default GuestId StringToGuestId(String value) {
+		if (value == null) {
+			return GuestId.empty();
+		}
 		return GuestId.of(value);
 	}
 

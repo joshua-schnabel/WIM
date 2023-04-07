@@ -50,21 +50,30 @@ public class Guest extends AggregateRoot<GuestId> {
 		return this.name;
 	}
 
+	public void initializeNew() {
+		this.id = GuestId.getNewId();
+		this.setNew();
+	}
+
+	protected Guest removeInvitation() {
+		this.invitation = Optional.empty();
+		return this;
+	}
+
 	@Override
 	protected void setIdInternal(GuestId id) {
 		this.id = id;
-	}
+	};
 
 	protected Guest setInvitation(InvitationId id) {
 		this.invitation = Optional.of(id);
 		return this;
-	}
+	};
 
 	public void setName(GuestName name) {
 		if (this.type == GuestType.PrimaryGuest) {
 			throw new IllegalObjectModificationException(DomainErrors.GUEST_name_cannot_be_changed_afterwards);
 		}
 		this.name = name;
-	};
-
+	}
 }

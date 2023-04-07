@@ -48,7 +48,7 @@ public class GuestRepositoryInMemory implements GuestRepository {
 	@Override
 	public Mono<Boolean> remove(Guest aggregate) {
 		return Mono.create(callback -> {
-			final var result = this.map.values().removeIf(aggregate::equals);
+			final var result = this.map.remove(aggregate.getId()) != null;
 			callback.success(result);
 		});
 	}
@@ -64,7 +64,8 @@ public class GuestRepositoryInMemory implements GuestRepository {
 	@Override
 	public Mono<Guest> store(Guest agregate) {
 		return Mono.create(callback -> {
-			callback.success(this.map.put(agregate.getId(), agregate));
+			this.map.put(agregate.getId(), agregate);
+			callback.success(this.map.get(agregate.getId()));
 		});
 	}
 

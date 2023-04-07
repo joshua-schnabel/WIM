@@ -1,11 +1,8 @@
 package de.joshuaschnabel.wim.infrastructur.presentation.rest.controllers;
 
-import java.util.function.Function;
-
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.joshuaschnabel.wim.domain.invitation.Invitation;
+import de.joshuaschnabel.wim.domain.guest.GuestRepository;
 import de.joshuaschnabel.wim.domain.invitation.InvitationRepository;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.error.ElementNotFoundException;
-import de.joshuaschnabel.wim.infrastructur.presentation.rest.hatos.InvitationHatosDecorator;
-import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.InvitationMapper;
+import de.joshuaschnabel.wim.infrastructur.presentation.rest.mapper.GuestSirenMapper;
+import de.joshuaschnabel.wim.infrastructur.presentation.rest.mapper.InvitationSirenMapper;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.dto.InvitationDTO;
 import reactor.core.publisher.Mono;
 
@@ -31,28 +28,53 @@ import reactor.core.publisher.Mono;
 @RequestMapping(path = "api/invitations")
 public class InvitationController {
 
-	private InvitationMapper mapper = Mappers.getMapper(InvitationMapper.class);
-
 	@Autowired
 	private InvitationRepository invitationRepository;
 
-	private final InvitationHatosDecorator hatosDecorator = new InvitationHatosDecorator();
+	@Autowired
+	private GuestRepository guestRepository;
 
-	@GetMapping(path = "/")
-	public Mono<CollectionModel<EntityModel<InvitationDTO>>> all() {
-		final var elements = this.invitationRepository.getAll().map(this.mapToInvitationDto());
-		return this.hatosDecorator.addListLinks(elements);
+	private final InvitationSirenMapper sirenMapper = new InvitationSirenMapper();
+	private final GuestSirenMapper sirenGuestMapper = new GuestSirenMapper();
+
+	@PostMapping(path = "/{id}/guests", consumes = MediaType.TEXT_PLAIN_VALUE)
+	public Mono<ResponseEntity<?>> addGuest(@PathVariable String id, @RequestBody String guestIdIn) {
+		final var invitationId = this.sirenMapper.map(id);
+		final var guestId = this.sirenGuestMapper.map(guestIdIn);
+		final var element = this.invitationRepository.get(invitationId)
+				// If Invitation not found
+				.switchIfEmpty(Mono.error(ElementNotFoundException.builder().elementId(invitationId.get())
+						.functionalErrorCode("invitation_not_found").build()));
+		final var guest = this.guestRepository.get(guestId)
+				// If Guest not found
+				.switchIfEmpty(Mono.error(ElementNotFoundException.builder().elementId(guestId.get())
+						.functionalErrorCode("guest_not_found").build()));
+		return Mono.zip(element, guest).map(tp -> {
+			tp.getT1().addGuest(tp.getT2().getId());
+			return this.invitationRepository.store(tp.getT1());
+		}).flatMap(mono -> mono).map(x -> ResponseEntity.ok().build());
 	}
 
-	@GetMapping(path = "/{id}/guests")
-	public Mono<EntityModel<InvitationDTO>> allGuests(@PathVariable String id) {
-		throw new IllegalAccessError();
+	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<RepresentationModel<?>> create(@RequestBody Mono<InvitationDTO> invitationDTO) {
+		return invitationDTO.flatMap(resource -> {
+			if (resource.getId() != null || resource.getCode() != null) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+			}
+			final var dto = this.sirenMapper.map(resource);
+			dto.initializeNew();
+			final var object = this.invitationRepository.store(dto);
+			return this.sirenMapper.map(object);
+		});
 	}
 
 	@DeleteMapping(path = "/{id}")
-	public Mono<ResponseEntity<?>> deleteOne(@PathVariable String id) {
-		final var invitationId = this.mapper.stringTOInvitationId(id);
-		return this.invitationRepository.remove(invitationId).map(result -> {
+	public Mono<ResponseEntity<?>> delete(@PathVariable String id) {
+		final var invitationId = this.sirenMapper.map(id);
+		return this.invitationRepository.get(invitationId).map(x -> {
+			x.uninitialize();
+			return this.invitationRepository.remove(x);
+		}).flatMap(x -> x).map(result -> {
 			if (result) {
 				return ResponseEntity.ok().build();
 			}
@@ -60,46 +82,62 @@ public class InvitationController {
 		});
 	}
 
-	@GetMapping(path = "/{id}")
-	public Mono<EntityModel<InvitationDTO>> findOne(@PathVariable String id) {
-		final var invitationId = this.mapper.stringTOInvitationId(id);
+	@DeleteMapping(path = "/{id}/guests", consumes = MediaType.TEXT_PLAIN_VALUE)
+	public Mono<ResponseEntity<?>> deleteGuest(@PathVariable String id, @RequestBody String guestIdIn) {
+		final var invitationId = this.sirenMapper.map(id);
+		final var guestId = this.sirenGuestMapper.map(guestIdIn);
+		final var element = this.invitationRepository.get(invitationId)
+				// If Invitation not found
+				.switchIfEmpty(Mono.error(ElementNotFoundException.builder().elementId(invitationId.get())
+						.functionalErrorCode("invitation_not_found").build()));
+		final var guest = this.guestRepository.get(guestId)
+				// If Guest not found
+				.switchIfEmpty(Mono.error(ElementNotFoundException.builder().elementId(guestId.get())
+						.functionalErrorCode("guest_not_found").build()));
+		return Mono.zip(element, guest).map(tp -> {
+			tp.getT1().removeGuest(tp.getT2().getId());
+			return tp.getT1();
+		}).map(x -> ResponseEntity.ok().build());
+	}
+
+	@GetMapping(path = "/")
+	public Mono<CollectionModel<RepresentationModel<?>>> get() {
+		final var elements = this.invitationRepository.getAll();
+		return this.sirenMapper.map(elements);
+	}
+
+	@GetMapping(path = "/{id}/guests")
+	public Mono<CollectionModel<?>> getGuests(@PathVariable String id) {
+		final var invitationId = this.sirenMapper.map(id);
 		final var element = this.invitationRepository.get(invitationId)
 				// If Invitation not found
 				.switchIfEmpty(Mono.error(ElementNotFoundException.builder().elementId(id)
-						.functionalErrorCode("invitation_not_found").build()))
-				.map(this.mapToInvitationDto());
-		return this.hatosDecorator.addLinks(element);
+						.functionalErrorCode("invitation_not_found").build()));
+		return element.map(x -> this.sirenMapper.mapGuestStati(x)).flatMap(x -> x);
 	}
 
-	private Invitation mapToInvitation(InvitationDTO resource) {
-		return this.mapper.invitationDTOTOInvitation(resource);
-	}
-
-	private Function<Invitation, InvitationDTO> mapToInvitationDto() {
-		return x -> this.mapper.invitationTOinvitationDTO(x);
-	}
-
-	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<EntityModel<InvitationDTO>> newInvitation(@RequestBody Mono<EntityModel<InvitationDTO>> invitationDTO) {
-		return invitationDTO.flatMap(resource -> {
-			final var dto = this.mapToInvitation(resource.getContent());
-			final var object = this.invitationRepository.store(dto);
-			return this.hatosDecorator.addLinks(object.map(this.mapToInvitationDto()));
-		});
+	@GetMapping(path = "/{id}")
+	public Mono<RepresentationModel<?>> self(@PathVariable String id) {
+		final var invitationId = this.sirenMapper.map(id);
+		final var element = this.invitationRepository.get(invitationId)
+				// If Invitation not found
+				.switchIfEmpty(Mono.error(ElementNotFoundException.builder().elementId(id)
+						.functionalErrorCode("invitation_not_found").build()));
+		return this.sirenMapper.map(element);
 	}
 
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<EntityModel<InvitationDTO>> updateInvitation(
-			@RequestBody Mono<EntityModel<InvitationDTO>> invitationDTO, @PathVariable String id) {
-		final var invitationId = this.mapper.stringTOInvitationId(id);
+	public Mono<RepresentationModel<?>> update(@RequestBody Mono<InvitationDTO> invitationDTO,
+			@PathVariable String id) {
+		final var invitationId = this.sirenMapper.map(id);
+		;
 		final var invitation = invitationDTO.flatMap(resource -> {
-			final var dto = this.mapToInvitation(resource.getContent());
+			final var dto = this.sirenMapper.map(resource);
 			if (!invitationId.equals(dto.getId())) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 			}
-			final var object = this.invitationRepository.store(dto);
-			return object.map(this.mapToInvitationDto());
+			return this.invitationRepository.store(dto);
 		});
-		return this.hatosDecorator.addLinks(invitation);
+		return this.sirenMapper.map(invitation);
 	}
 }

@@ -9,7 +9,17 @@ spring:
 spring:
   config:
     activate:
-      on-profile: "prod"
+      on-profile: "h2"
+  r2dbc:
+    url: r2dbc:h2:file:///./tmp/test-database
+    username: sa
+    password: password
+  flyway:
+    url: jdbc:h2:file:./tmp/test-database
+    locations: classpath:db-schema/
+logging:
+  level:
+    io.r2dbc.*: DEBUG
 ---
 spring:
   config:

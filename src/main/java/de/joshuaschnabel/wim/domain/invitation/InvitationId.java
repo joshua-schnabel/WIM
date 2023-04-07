@@ -5,34 +5,38 @@ import de.joshuaschnabel.wim.domain.ddd.objects.AggregateRootId;
 
 public class InvitationId extends AggregateRootId<String> {
 
-    public static class InvitationIdGenerator extends RandomStringIdGenerator<InvitationId> {
-        @Override
-        public InvitationId generate() {
-            return new InvitationId(this.generateID());
-        }
-    }
+	public static class InvitationIdGenerator extends RandomStringIdGenerator<InvitationId> {
+		@Override
+		public InvitationId generate() {
+			return new InvitationId(this.generateID());
+		}
+	}
 
-    private static InvitationIdGenerator generator = new InvitationIdGenerator();
+	private static InvitationIdGenerator generator = new InvitationIdGenerator();
 
-    public static InvitationId getNewId() {
-        return generator.generate();
-    }
+	public static InvitationId empty() {
+		return new InvitationId(null);
+	}
 
-    public static InvitationId of(String id) {
-        id = id.toLowerCase();
-        if (!generator.validate(id)) {
-            throw new IllegalArgumentException("Id should be " + generator.getSpecification());
-        }
-        return new InvitationId(id);
-    }
+	public static InvitationId getNewId() {
+		return generator.generate();
+	}
 
-    protected InvitationId(String value) {
-        super(value);
-    }
+	public static InvitationId of(String id) {
+		id = id.toLowerCase();
+		if (!generator.validate(id)) {
+			throw new IllegalArgumentException("Id should be " + generator.getSpecification());
+		}
+		return new InvitationId(id);
+	}
 
-    @Override
-    public String toString() {
-        return "GuestId [id()=" + this.get() + "]";
-    }
+	protected InvitationId(String value) {
+		super(value);
+	}
+
+	@Override
+	public String toString() {
+		return "GuestId [id()=" + this.get() + "]";
+	}
 
 }
