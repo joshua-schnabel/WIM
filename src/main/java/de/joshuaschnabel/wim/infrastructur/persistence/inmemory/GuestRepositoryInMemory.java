@@ -32,7 +32,6 @@ public class GuestRepositoryInMemory implements GuestRepository {
 				.type(GuestType.PrimaryGuest).build());
 		this.map.put(id3, Guest.builder().id(id3).name(GuestName.of(new FirstName("Max"), new LastName("Mustermann")))
 				.type(GuestType.PrimaryGuest).build());
-		System.out.println(this.map);
 	}
 
 	@Override

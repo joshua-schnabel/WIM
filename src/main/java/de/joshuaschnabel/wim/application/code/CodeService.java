@@ -1,11 +1,12 @@
 package de.joshuaschnabel.wim.application.code;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -19,7 +20,9 @@ public class CodeService {
 
 	public String generateToken(String userAgent, InvitationId iid) {
 		var algorithm = Algorithm.HMAC256(userAgent + this.secret);
-		return JWT.create().withIssuer("wim").withClaim("invitationId", iid.get()).sign(algorithm);
+		var validUntil = LocalDate.now().plusDays(7);
+		var date = validUntil.atStartOfDay(ZoneId.systemDefault()).toInstant();
+		return JWT.create().withIssuer("wim").withExpiresAt(date).withClaim("invitationId", iid.get()).sign(algorithm);
 	}
 
 	public Optional<InvitationId> validateToken(String userAgent, String token) {

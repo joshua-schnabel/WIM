@@ -6,6 +6,7 @@ import de.joshuaschnabel.wim.domain.ddd.type.BasicType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -37,5 +38,6 @@ public class GuestStatus extends Aggregate<GuestStatus.GuestStatusId> {
 	private GuestId guest;
 
 	@Builder.Default
+	@Setter
 	private GuestStatusAccepted accepted = new GuestStatusAccepted(false);
 }

@@ -12,16 +12,20 @@ import org.springframework.hateoas.server.reactive.WebFluxLinkBuilder;
 import de.ingogriebsch.spring.hateoas.siren.SirenModelBuilder;
 import de.joshuaschnabel.wim.domain.guest.Guest;
 import de.joshuaschnabel.wim.domain.guest.GuestId;
+import de.joshuaschnabel.wim.domain.guest.GuestStatus;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.SirenMapper;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.controllers.GuestController;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.GuestMapper;
+import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.GuestStatusMapper;
 import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.dto.GuestDTO;
+import de.joshuaschnabel.wim.infrastructur.presentation.rest.model.dto.GuestStatusDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class GuestSirenMapper implements SirenMapper<Guest, GuestId, GuestDTO> {
 
 	private final GuestMapper guestMapper = Mappers.getMapper(GuestMapper.class);
+	private final GuestStatusMapper guestStatusMapper = Mappers.getMapper(GuestStatusMapper.class);;
 	private final GuestController controllerGuest = WebFluxLinkBuilder.methodOn(GuestController.class);
 
 	private Mono<RepresentationModel<?>> addLinksToDTO(Guest domain) {
@@ -50,6 +54,14 @@ public class GuestSirenMapper implements SirenMapper<Guest, GuestId, GuestDTO> {
 	@Override
 	public Guest map(GuestDTO dto) {
 		return this.guestMapper.guestDTOTOguest(dto);
+	}
+
+	public GuestStatusDTO map(GuestStatus guestStatus) {
+		return this.guestStatusMapper.guestStatusTOGuestStatusDTO(guestStatus);
+	}
+
+	public GuestStatus map(GuestStatusDTO guestStatusDto) {
+		return this.guestStatusMapper.guestStatusDTOTOGuestStatus(guestStatusDto);
 	}
 
 	@Override

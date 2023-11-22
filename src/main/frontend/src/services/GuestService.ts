@@ -1,10 +1,16 @@
-import axios from "axios";
 import { find } from 'lodash';
+import HttpClient, { baseURL } from "./Axios";
 
 export interface NewGuest {
     firstname: string;
     lastname: string;
     guestType: string;
+}
+
+export interface UpdateGuest {
+    id: string;
+    firstname: string;
+    lastname: string;
 }
 
 export interface Guest {
@@ -68,8 +74,13 @@ export interface FieldsEntity {
 
 
 class GuestService {
+    public async getGuest(id: string): Promise<Guest> {
+        const response = await HttpClient.get<GuestEntitiesEntity>("/api/guests/"+id);
+        return this.toGuest(response.data);
+    }
+
     public async getGuests(): Promise<Guest[]> {
-        const response = await axios.get<GuestsCollection>("/api/guests/");
+        const response = await HttpClient.get<GuestsCollection>("/api/guests/");
         const result: Guest[] = []
         response.data.entities?.forEach(e => {
             const myGuest: Guest = this.toGuest(e);
@@ -88,19 +99,23 @@ class GuestService {
             guestType: e.properties.guestType,
             assigned: e.properties.assigned,
             actions: {
-                edit: patchAction,
-                delete: deleteAction
+                edit: patchAction?.replace(baseURL, ""),
+                delete: deleteAction?.replace(baseURL, ""),
             }
         };
         return myGuest;
     }
 
     public async deleteGuest(action: string): Promise<void> {
-        await axios.delete<void>(action);
+        await HttpClient.delete<void>(action);
     }
 
     public async createGuest(guest: NewGuest): Promise<Guest> {
-        const response = await axios.post<GuestEntitiesEntity>("/api/guests/", guest);
+        const response = await HttpClient.post<GuestEntitiesEntity>("/api/guests/", guest);
+        return this.toGuest(response.data);
+    }    
+    public async updateGuest(guest: UpdateGuest): Promise<Guest> {
+        const response = await HttpClient.patch<GuestEntitiesEntity>("/api/guests/"+guest.id, guest);
         return this.toGuest(response.data);
     }
 }

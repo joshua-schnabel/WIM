@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-unused-vars -->
 <template>
   <div class="row row-mt-2">
     <div class="col-12 main-content p-5 fw-bolder">
@@ -52,6 +53,10 @@
                 <Plus /> Einladung hinzufügen
               </button>
             </p>
+            <p>
+              Von {{ guestStats.total }} Gästen haben {{ guestStats.accepted }} Gäste zugesagt und {{ guestStats.notAccepted }}
+              abgesagt. Es stehen noch Antworten von {{ guestStats.noAnswer }} Gästen aus.
+            </p>
             <table class="table table-light table-striped">
               <thead>
                 <tr>
@@ -62,6 +67,7 @@
                   <th scope="col">Anfrage</th>
                   <th scope="col">Angenommen</th>
                   <th scope="col">Antwort</th>
+                  <th scope="col">Code</th>
                   <th scope="col">Aktionen</th>
                 </tr>
               </thead>
@@ -70,14 +76,14 @@
                   <th scope="row">{{ invitation.id }}</th>
                   <td>{{ invitation.name }}</td>
                   <td>{{ invitation.status }}</td>
-                  <td>{{ invitation.confirmedGuestsCount }}/{{ invitation.assignedGuestsCount }}</td>
+                  <td><span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true"
+                      :title="generateGuestsList(invitation)">{{
+                        invitation.confirmedGuestsCount }}/{{ invitation.assignedGuestsCount }}</span></td>
                   <td>{{ invitation.specialRequest }}</td>
                   <td>{{ invitation.specialRequestAccepted ? "Ja" : "Nein" }}</td>
                   <td>{{ invitation.specialRequestAnswer }}</td>
+                  <td>{{ invitation.code }}</td>
                   <td>
-                    <button type="button" class="btn btn-warning" v-if="invitation.actions.delete">
-                      <Pen />
-                    </button>
                     <button type="button" class="btn btn-danger" v-if="invitation.actions.delete"
                       @click="deleteInvitation(invitation.actions.delete)">
                       <Delete />
@@ -86,6 +92,19 @@
                 </tr>
               </tbody>
             </table>
+            <div class="print-div">
+              <table class="qr-table">
+                <tbody>
+                  <tr v-for="(listQr, index) in qrCodeData" :key="index">
+                    <td v-for="(qr, index2) in listQr" :key="index2" class="qr-sqare">
+                      <qrcode-vue :value="qr.url" :size="80" level="L" />
+                      <br>
+                      Code: {{ qr.code }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -117,7 +136,7 @@
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="createGuest(newGuest)">Speichern</button>
+              <SimpleButton text="Speichern" @click="createGuest(newGuest)" />
             </div>
           </div>
         </div>
@@ -188,7 +207,7 @@
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="invitationModalCreate()">Speichern</button>
+              <SimpleButton text="Speichern" @click="invitationModalCreate()" />
             </div>
           </div>
         </div>
@@ -205,25 +224,58 @@
               {{ yesNoModalData.question }}
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-error" @click="yesNoAnswer(false)">Nein</button>
-              <button type="button" class="btn btn-success" @click="yesNoAnswer(true)">Ja</button>
+              <SimpleButton text="Nein" @click="yesNoAnswer(false)" />
+              <SimpleButton text="Ja" @click="yesNoAnswer(true)" />
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <SimpleModal ref="serverErrorDialog" title="Unbekannter Fehler"
+    text="Es ist ein unerwarteter Fehler aufgetereten! Bitte versuche es später erneut!"
+    @close="router.push({ name: 'admin' })" />
+  <SimpleModal ref="authErrorDialog" title="Anmeldung abgelaufen"
+    text="Deine Anmeldung ist abgelaufen! Bitte melde dich erneut an!" @close="router.push({ name: 'admin' })" />
 </template>
 
 <script setup lang="ts">
+import QrcodeVue from 'qrcode.vue'
 import { onMounted, ref, computed, watch } from 'vue';
 import Delete from 'vue-material-design-icons/Delete.vue';
 import Pen from 'vue-material-design-icons/Pen.vue';
 import Plus from 'vue-material-design-icons/Plus.vue';
 import guestService, { type Guest, type NewGuest } from '@/services/GuestService';
 import invitationService, { type Invitation, type NewInvitation } from '@/services/InvitationService';
-import { Modal, Dropdown } from "bootstrap";
+import { Modal, Dropdown, Tooltip } from "bootstrap";
 import _ from 'lodash';
+import router from "@/router";
+import UserService from "@/services/UserService";
+
+/* Errors */
+
+defineExpose({ serverError, authError })
+
+const serverErrorDialog = ref();
+const authErrorDialog = ref();
+
+function serverError(err: Error) {
+  console.error(err.message);
+  yesNoModal.hide();
+  guestModal.hide();
+  invitationModal.hide();
+  UserService.setUserLoggedIn(false);
+  serverErrorDialog.value.show();
+}
+
+function authError(err: Error) {
+  console.error(err.message);
+  yesNoModal.hide();
+  guestModal.hide();
+  invitationModal.hide();
+  UserService.setUserLoggedIn(false);
+  authErrorDialog.value.show();
+}
 
 /* Guests */
 var guestsData = ref<Guest[]>();
@@ -243,12 +295,43 @@ async function deleteGuest(action: string | undefined) {
   }
 }
 
-onMounted(() => {
-  updateGuest();
+onMounted(async () => {
+  await updateGuest();
 })
 
 /*Invitation*/
 var invitationsData = ref<Invitation[]>();
+
+var qrCodeData = computed((): { url: string, code: string }[][] => {
+  return _(invitations.value).map(i => {
+    return {
+      url: "https://jule-und-joshua.de/code/" + i.code,
+      code: i.code
+    }
+  }).chunk(5).value();
+})
+
+var guestStats = computed(() => {
+  var total = 0;
+  var accepted = 0;
+  var notAccepted = 0;
+  var noAnswer = 0;
+  invitations.value?.forEach(x => {
+    total += x.assignedGuestsCount;
+    if (x.status.toLocaleUpperCase() == "ANSWERED") {
+      accepted += x.confirmedGuestsCount;
+      notAccepted += x.assignedGuestsCount - x.confirmedGuestsCount;
+    } else {
+      noAnswer += x.assignedGuestsCount
+    }
+  });
+  return {
+    total: total,
+    accepted: accepted,
+    notAccepted: notAccepted,
+    noAnswer: noAnswer
+  }
+});
 
 const invitations = computed(() => {
   return invitationsData.value;
@@ -256,6 +339,7 @@ const invitations = computed(() => {
 
 async function updateInvitations() {
   invitationsData.value = await invitationService.getInvitations();
+  setTimeout(() => { generateToolTips(); }, 200);
 }
 
 async function deleteInvitation(action: string | undefined) {
@@ -266,8 +350,8 @@ async function deleteInvitation(action: string | undefined) {
   }
 }
 
-onMounted(() => {
-  updateInvitations();
+onMounted(async () => {
+  await updateInvitations();
 })
 
 /*Invitation Modal*/
@@ -314,8 +398,8 @@ function updateInvitationModalGuestSearchResultsCurrent() {
 
 function updateInvitationModalGuestSearchResults(search: string) {
   console.log("updateInvitationModalGuestSearchResults");
-  var x = _.filter(guestsData.value, guest => (guest.firstname.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
-    || guest.lastname.toLocaleLowerCase().startsWith(search.toLocaleLowerCase()) && guest.guestType == "PrimaryGuest" && !guest.assigned))
+  var x = _.filter(guestsData.value, guest => ((guest.firstname.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
+    || guest.lastname.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())) && guest.guestType == "PrimaryGuest" && !guest.assigned))
     .filter(guest => !_.some(invitationModalGuestSelected.value, (guest2) => guest.id == guest2.id))
     .map((guest: Guest) => { return { id: guest.id, text: guest.firstname + " " + guest.lastname } });
   if (x.length == 0) {
@@ -344,7 +428,7 @@ function showGuestAddDialog() {
 async function createGuest(guest: NewGuest) {
   await guestService.createGuest(guest);
   await updateGuest();
-  guestModal.hide();
+  await guestModal.hide();
 }
 
 onMounted(() => {
@@ -381,10 +465,64 @@ onMounted(() => {
     yesNoModalElement = element;
 })
 
+// Tooltip 
+
+onMounted(() => {
+  generateToolTips();
+})
+
+function generateToolTips() {
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  console.log(tooltipTriggerList);
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new Tooltip(tooltipTriggerEl)
+  })
+}
+
+function generateGuestsList(inv: Invitation): string {
+  const iguests = inv.guests;
+  const result = _(iguests).map((g) => {
+    const guest = _(guests.value).find({ 'id': g.guestId });
+    return "<b>" + guest?.firstname + " " + guest?.lastname + "</b>:" + (g.accepted ? "Ja" : "Nein");
+  }).value();
+  return result.join("<br>");
+}
 </script>
 
 <style lang="scss" scoped>
 #invitationUserSearch {
   width: calc(100% - 2 * var(--bs-modal-padding));
 }
-</style>
+
+.qr-table {
+  border-collapse: separate;
+  border-spacing: 14px;
+}
+
+.qr-sqare {
+  width: 36mm;
+  height: 36.25mm;
+  text-align: center;
+}
+
+.print-div {
+  display: none;
+}
+
+@media print {
+  .print-div {
+    display: block;
+  }
+
+  .print-div,
+  .print-div * {
+    visibility: visible !important;
+  }
+
+  .print-div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    text-transform: uppercase;
+  }
+}</style>

@@ -7,6 +7,7 @@ import de.joshuaschnabel.wim.domain.invitation.SpecialRequest.SpecialRequestId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -49,8 +50,11 @@ public class SpecialRequest extends Aggregate<SpecialRequestId> {
 
 	private final Request request;
 
-	private final RequestStatus accepted;
+	@Setter
+	@Builder.Default
+	private RequestStatus accepted = RequestStatus.NO;
 
-	private final RequestAnser answer;
+	@Setter
+	private RequestAnser answer;
 
 }

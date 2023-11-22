@@ -3,6 +3,7 @@ package de.joshuaschnabel.wim.infrastructur.presentation.rest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,11 @@ import de.ingogriebsch.spring.hateoas.siren.SirenMediaTypeConfiguration;
 @Configuration
 @Import({ SirenMediaTypeConfiguration.class })
 public class SirenCustomConfiguration {
+	@Bean
+	ForwardedHeaderTransformer forwardedHeaderTransformer() {
+		return new ForwardedHeaderTransformer();
+	}
+
 	@Bean
 	public ObjectMapper objectMapper() {
 		final var objectMapper = new ObjectMapper();

@@ -15,6 +15,7 @@ dependencyResolutionManagement {
 			library('hateoas-siren', 'de.ingogriebsch.hateoas', 'spring-hateoas-siren').version('1.4.0-SNAPSHOT')
 			library('jwt', 'com.auth0', 'java-jwt').version('4.4.0')
 			library('flyway', 'org.flywaydb', 'flyway-core').version('9.16.1')
+			library('flyway.mysql', 'org.flywaydb', 'flyway-mysql').version('9.16.1')
 		}
         spring {
             version('spring-boot', '3.0.5')

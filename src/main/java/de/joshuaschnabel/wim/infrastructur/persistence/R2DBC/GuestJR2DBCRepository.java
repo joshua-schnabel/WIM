@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
-@Profile(value = "h2")
+@Profile({ "h2-prod", "h2", "mysql" })
 public class GuestJR2DBCRepository implements GuestRepository {
 
 	@Autowired

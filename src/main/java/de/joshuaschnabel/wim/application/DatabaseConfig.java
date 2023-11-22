@@ -17,7 +17,7 @@ class DatabaseConfig {
 
 	@Bean(initMethod = "migrate")
 	public Flyway flyway(FlywayProperties flywayProperties, R2dbcProperties r2dbcProperties) {
-		var h2 = this.activeProfiles.contains("h2");
+		var h2 = this.activeProfiles.contains("h2") || this.activeProfiles.contains("h2-prod");
 		var mysql = this.activeProfiles.contains("mysql");
 
 		var suffix = h2 ? "h2" : mysql ? "mysql" : "";

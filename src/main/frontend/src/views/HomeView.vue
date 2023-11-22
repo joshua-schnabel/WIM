@@ -21,50 +21,98 @@
     </div>
   </div>
   <div class="row row-mt-2">
-    <div class="col-12 main-content p-5 fw-bolder">
+    <div class="col-12 main-content fw-bolder">
       <div class="container-fluid">
         <div class="row">
           <div class="col">
             <h1>W<u>ir heiraten!&nbsp;</u></h1>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-              et
-              dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-              clita
-              kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
-              consetetur
-              sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-              voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-              takimata
-              sanctus est Lorem ipsum dolor sit amet.</p>
+            <p>Liebe Gäste, herzlich Wilkommen auf unserer Webseite. </p>
+            <p>Hier findet ihr alle Informationen zu
+              unserer Hochzeit und habt die Möglichkeit, euch zurückzumelden.</p>
           </div>
         </div>
         <div class="row">
           <div class="col">
             <h2>Gästebereich</h2>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-              et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-              Stet clita.</p>
+            <p>Bitte gebt euren individuellen Code aus der Einladung hier ein. Falls ihr per QR-Code oder NFC auf die
+              Seite gelangt seid, ist der Code bereits ausgefüllt. Mit dem "Anmelden"-Button gelangt ihr in den
+              Gästebereich.</p>
           </div>
         </div>
-        <div class="row mb-3">
-          <label for="colFormLabel" class="col-sm-2 col-form-label">Gästecode</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="colFormLabel" placeholder="code">
+        <div class="row mb-3">       
+          <label for="colFormLabel" class="col-12 col-sm-2 col-form-label">Gästecode</label>
+          <div class="col-8">
+            <SimpleInput v-model="code" placeholder="Euer persönlicher Code" regex="[A-Za-z0-9]{8}" error-text="Bitte den achtstelligen Code eingeben." @regexStatus="event => func1(event)"/>
           </div>
-          <div class="col-sm-2">
-            <button type="button" class="btn btn-dark">Anmelden</button>
-          </div>  
+          <div class="col-sm-2 col-4">
+            <SimpleButton text="Anmelden" @click="sendCode()" :working="working" :disabled="disableButton" />
+          </div>
+          <div class="col-12" v-if="codeStatus">
+            <div class="error-text">Der Code ist leider nicht korrekt.</div>
+          </div>   
         </div>
       </div>
     </div>
   </div>
+  <SimpleModal ref="serverErrorDialog" title="Unbekannter Fehler"
+    text="Es ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut!"
+    @close="router.push({ name: 'home' })" />
 </template>
 
 <script setup lang="ts">
+import router from "@/router";
+import Loading from 'vue-material-design-icons/Loading.vue';
+import TokenService from "@/services/TokenService";
+import { ref } from "vue";
+import SimpleInput from "@/components/SimpleInput.vue";
+
+const props = defineProps({
+  code: { type: String, required: false, defaultValue: "" }
+})
+
+/*Error*/
+defineExpose({ serverError, authError })
+
+const serverErrorDialog = ref();
+
+function serverError(_err: Error) {
+  serverErrorDialog.value.show();
+}
+
+function authError(_err: Error) {
+  serverErrorDialog.value.show();
+}
+
+var code = ref<string>(props.code || "");
+var codeStatus = ref<boolean>(false);
+var working = ref<boolean>(false);
+var disableButton = ref<boolean>(false);
+
+async function sendCode() {
+  working.value = true;
+  const result = await TokenService.getToken(code.value);
+  if (result) {
+    codeStatus.value = false;
+    router.push({ name: "guests" });
+    working.value = false;
+  } else {
+    codeStatus.value = true;
+    working.value = false;
+  }
+}
+
+function func1(event: boolean)  {
+  disableButton.value = event;
+}
+
 </script>
 
 <style lang="scss" scoped>
 @import "@/style/variables.scss";
+
+.error-text {
+  color: $red-500;
+}
 
 .image {
   background-color: #fff;

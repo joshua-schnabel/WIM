@@ -8,6 +8,7 @@ import de.joshuaschnabel.wim.domain.ddd.objects.AggregateRoot;
 import de.joshuaschnabel.wim.domain.ddd.type.BasicType;
 import de.joshuaschnabel.wim.domain.guest.GuestId;
 import de.joshuaschnabel.wim.domain.guest.GuestStatus;
+import de.joshuaschnabel.wim.domain.invitation.SpecialRequest.RequestStatus;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -48,6 +49,7 @@ public class Invitation extends AggregateRoot<InvitationId> {
 		this.id = InvitationId.getNewId();
 		this.code = InvitationCode.generate();
 		this.status = InvitationStatus.UNOPENED;
+		this.specialRequest.setAccepted(RequestStatus.NO);
 		this.setNew();
 	}
 
@@ -68,6 +70,18 @@ public class Invitation extends AggregateRoot<InvitationId> {
 	@Override
 	protected void setIdInternal(InvitationId id) {
 		this.id = id;
+	}
+
+	public void setStatusAnswerd() {
+		if (this.status == InvitationStatus.UNOPENED || this.status == InvitationStatus.OPENED) {
+			this.status = InvitationStatus.ANSWERED;
+		}
+	}
+
+	public void setStatusOpend() {
+		if (this.status == InvitationStatus.UNOPENED) {
+			this.status = InvitationStatus.OPENED;
+		}
 	}
 
 	public void uninitialize() {

@@ -11,11 +11,8 @@
                     <li class="nav-item">
                         <router-link class="nav-link" :class="{ active: currentRouteName === 'home' }" aria-current="page" :to="{ name: 'home'}">Home</router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="isGuest">
                         <router-link class="nav-link" :class="{ active: currentRouteName === 'guests' }" aria-current="page" :to="{ name: 'guests'}">Gästebereich</router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link class="nav-link" :class="{ active: currentRouteName === 'admin' }" aria-current="page" :to="{ name: 'admin'}">Administration</router-link>
                     </li>
                 </ul>
             </div>
@@ -25,7 +22,14 @@
 
 <script lang="ts" setup>
 import { RouterLink, useRouter  } from 'vue-router'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import TokenService from '@/services/TokenService';
+
+var isGuest = ref(false);
+
+onMounted(async () => {
+    isGuest.value = await TokenService.localTokenSet();
+});
 
 const currentRouteName = computed(() => {
     return useRouter().currentRoute.value.name;
@@ -36,6 +40,11 @@ const currentRouteName = computed(() => {
 <style lang="scss" scoped>
 .navbar {
     box-shadow: 0 0 15px 0px #555;
+}
+@media print {
+  .navbar {
+    display: none;
+  }
 }
 </style>
   

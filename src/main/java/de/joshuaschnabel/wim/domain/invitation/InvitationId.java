@@ -36,7 +36,7 @@ public class InvitationId extends AggregateRootId<String> {
 
 	@Override
 	public String toString() {
-		return "GuestId [id()=" + this.get() + "]";
+		return "InvitationId [id()=" + this.get() + "]";
 	}
 
 }

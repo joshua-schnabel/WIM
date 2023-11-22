@@ -2,12 +2,12 @@ package de.joshuaschnabel.wim.infrastructur.persistence.R2DBC;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.joshuaschnabel.wim.domain.invitation.Invitation;
 import de.joshuaschnabel.wim.domain.invitation.InvitationCode;
@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 @Component
-@Profile(value = "h2")
+@Profile({ "h2-prod", "h2", "mysql" })
 public class InvitationR2DBCRepository implements InvitationRepository {
 
 	@Autowired
@@ -50,7 +50,6 @@ public class InvitationR2DBCRepository implements InvitationRepository {
 	public Mono<Invitation> getByCode(InvitationCode invitationCode) {
 		var code = this.mapper.invitationCodeTOString(invitationCode);
 		var element = this.invRepo.findByCode(code).map(this.getStati()).flatMap(mono -> mono);
-		;
 		return element.map(this.mergeElementAndStati()).map(this.mapper::invitationPojoTOInvitation);
 	}
 
@@ -70,6 +69,7 @@ public class InvitationR2DBCRepository implements InvitationRepository {
 	}
 
 	@Override
+	@Transactional
 	public Mono<Boolean> remove(Invitation aggregate) {
 		var id = this.mapper.invitationIdTOString(aggregate.getId());
 		var statiDeleteStatus = this.gstRepo.deleteByInvitationId(id);
@@ -78,6 +78,7 @@ public class InvitationR2DBCRepository implements InvitationRepository {
 	}
 
 	@Override
+	@Transactional
 	public Mono<Boolean> remove(InvitationId identity) {
 		var id = this.mapper.invitationIdTOString(identity);
 		var statiDeleteStatus = this.gstRepo.deleteByInvitationId(id);
@@ -86,13 +87,13 @@ public class InvitationR2DBCRepository implements InvitationRepository {
 	}
 
 	@Override
+	@Transactional
 	public Mono<Invitation> store(Invitation agregate) {
 		var element = this.mapper.invitationTOinvitationPojo(agregate);
-		var stati = element.getGuestStati().stream().map(x -> {
+		var statiList = Flux.fromIterable(element.getGuestStati()).map(x -> {
 			x.setInvitationId(element.getId());
 			return x;
-		}).map(x -> this.gstRepo.save(x)).collect(Collectors.toList());
-		var statiList = Flux.fromIterable(stati).flatMap(mono -> mono).collectList();
+		}).map(x -> this.gstRepo.save(x)).flatMap(mono -> mono).collectList();
 		var saveResult = this.invRepo.save(element);
 		return Mono.zip(saveResult, statiList).map(this.mergeElementAndStati())
 				.map(this.mapper::invitationPojoTOInvitation);

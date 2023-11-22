@@ -1,25 +1,52 @@
 server:
   port : 3000
+management:
+  server:
+    port: 3001
 spring:
   main:
     web-application-type: reactive
   profiles:
     active: "prod"
+  security:
+    oauth2:
+      client:
+        registration:
+          authentik:
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
+            provider: authentik-provider
+            authorization-grant-type: authorization_code
+            redirect-uri: '{baseUrl}/api/auth/oauth2/code/{registrationId}'
+            scope:
+            - profile
+            - email
+            - openid
+        provider:
+          authentik-provider:
+            authorization-uri: https://login.1js.de/application/o/authorize/
+            token-uri: https://login.1js.de/application/o/token/
+            user-info-uri: https://login.1js.de/application/o/userinfo/
+            user-name-attribute: preferred_username
+            jwk-set-uri: https://login.1js.de/application/o/testapp/jwks/
+  r2dbc:
+    url: ${R2DBC_DB_URL}
+    username: ${R2DBC_DB_USER}
+    password: ${R2DBC_DB_PASSWORD}
+  flyway:
+    url: ${JDBC_DB_URL}
+    locations: classpath:db-schema/
 ---
 spring:
   config:
     activate:
       on-profile: "h2"
   r2dbc:
-    url: r2dbc:h2:file:///./tmp/test-database
-    username: sa
-    password: password
+    url: r2dbc:h2:file:///./tmp/db
+    username: user
+    password: qTEoCZ78z3xN3Jwnfsekhw5h6TE22WJQ
   flyway:
-    url: jdbc:h2:file:./tmp/test-database
-    locations: classpath:db-schema/
-logging:
-  level:
-    io.r2dbc.*: DEBUG
+    url: jdbc:h2:file:./tmp/db
 ---
 spring:
   config:
@@ -29,3 +56,11 @@ spring:
     restart:
       enabled: true
       poll-interval: 5s
+  security:
+    oauth2:
+      client:
+        registration:
+          authentik:
+            client-id: 88a84a9a71d046ebf672bb9f887b2b1e9bfa2b58
+            client-secret: 3702d9ec07b9d2445d1a0fd038d37073e1650951cf8afcba376695ac2f8b1ccc2b52a6ff72131d02c15099074ec8fe27a0b8b945e2882812d3d57e54f7b19748
+            

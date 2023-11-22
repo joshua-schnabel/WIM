@@ -5,8 +5,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("h2")
+@Profile({ "h2", "h2-prod" })
 public class H2 {
+
+	private static Boolean done = false;
 
 	private org.h2.tools.Server webServer;
 
@@ -14,8 +16,11 @@ public class H2 {
 
 	@EventListener(org.springframework.context.event.ContextRefreshedEvent.class)
 	public void start() throws java.sql.SQLException {
-		this.webServer = org.h2.tools.Server.createWebServer("-webPort", "8082", "-tcpAllowOthers").start();
-		this.tcpServer = org.h2.tools.Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers").start();
+		if (!done) {
+			this.webServer = org.h2.tools.Server.createWebServer("-webPort", "8082", "-tcpAllowOthers").start();
+			this.tcpServer = org.h2.tools.Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers").start();
+			done = true;
+		}
 	}
 
 	@EventListener(org.springframework.context.event.ContextClosedEvent.class)

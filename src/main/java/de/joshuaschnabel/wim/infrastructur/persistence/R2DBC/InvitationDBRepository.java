@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 interface InvitationDBRepository extends R2dbcRepository<InvitationPojo, String> {
 
-	@Query("SELECT * FROM InvitationPojo WHERE code = :code")
+	@Query("SELECT * FROM invitations WHERE code = :code")
 	Mono<InvitationPojo> findByCode(String code);
 
 }

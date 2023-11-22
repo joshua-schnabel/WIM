@@ -1,8 +1,8 @@
-import axios from "axios";
 import { find } from 'lodash';
 import GuestService from "./GuestService";
 import type { Guest, NewGuest } from "./GuestService";
-
+import HttpClient, {baseURL} from "./Axios";
+import _ from 'lodash';
 export interface InvitationCollection {
     class: string[];
     entities: InvitationEntity[];
@@ -58,7 +58,7 @@ export interface GuestStatusEntity {
     entities?: GuestStatusEntity[];
     links: Link[];
     title: string;
-    properties?: GuestStatusProperties;
+    properties: GuestStatusProperties;
 }
 
 export interface Link {
@@ -88,7 +88,7 @@ export interface InvitationProperties {
     code: string;
     name: string;
     specialRequest: string;
-    specialRequestAccepted: string;
+    specialRequestAccepted: boolean;
     specialRequestAnswer: string;
     status: string;
     assignedGuestsCount: number;
@@ -100,7 +100,7 @@ export interface Invitation {
     code: string;
     name: string;
     specialRequest: string;
-    specialRequestAccepted: string;
+    specialRequestAccepted: boolean;
     specialRequestAnswer: string;
     status: string;
     assignedGuestsCount: number;
@@ -108,7 +108,13 @@ export interface Invitation {
     actions: {
         edit?: string;
         delete?: string;
-    }
+    },
+    guests: GuestStatus[];
+}
+
+export interface GuestStatus {
+    guestId: string;
+    accepted: boolean;
 }
 
 export interface NewInvitation {
@@ -116,41 +122,70 @@ export interface NewInvitation {
     specialRequest: string;
 }
 
+export interface UpdateInvitation {
+    id: string;
+    specialRequestAccepted: boolean;
+    specialRequestAnswer: string;
+}
+
 class InvitationService {
     public async getInvitations(): Promise<Invitation[]> {
-        const response = await axios.get<InvitationCollection>("/api/invitations/");
+        const response = await HttpClient.get<InvitationCollection>("/api/invitations/");
         const result: Invitation[] = []
         response.data.entities?.forEach(e => {
-            const deleteAction = find(e.actions, { method: "DELETE" })?.href;
-            const patchAction = find(e.actions, { method: "PATCH" })?.href;
-            const myGuest: Invitation = {
-                id: e.properties.id,
-                code: e.properties.code,
-                name: e.properties.name,
-                specialRequest: e.properties.specialRequest,
-                specialRequestAccepted: e.properties.specialRequestAccepted,
-                specialRequestAnswer: e.properties.specialRequestAnswer,
-                status: e.properties.status,
-                assignedGuestsCount: e.properties.assignedGuestsCount,
-                confirmedGuestsCount: e.properties.confirmedGuestsCount,
-                actions: {
-                    edit: patchAction,
-                    delete: deleteAction
-                }
-            };
-            result.push(myGuest);
+            result.push(this.mapToInvitation(e));
         });
         return result;
     }
+    private mapToInvitation(e: InvitationEntity) {
+        const deleteAction = find(e.actions, { method: "DELETE" })?.href;
+        const patchAction = find(e.actions, { method: "PATCH" })?.href;
+        const guests: GuestStatus[] = _.map(e.entities[0].entities[0].entities, x => {
+            const y: GuestStatus = {
+                guestId: x.properties?.guestId,
+                accepted: x.properties?.accepted
+            };
+            return y;
+        });
+        const myGuest: Invitation = {
+            id: e.properties.id,
+            code: e.properties.code,
+            name: e.properties.name,
+            specialRequest: e.properties.specialRequest,
+            specialRequestAccepted: e.properties.specialRequestAccepted,
+            specialRequestAnswer: e.properties.specialRequestAnswer,
+            status: e.properties.status,
+            assignedGuestsCount: e.properties.assignedGuestsCount,
+            confirmedGuestsCount: e.properties.confirmedGuestsCount,
+            actions: {
+                edit: patchAction?.replace(baseURL, ""),
+                delete: deleteAction?.replace(baseURL, "")
+            },
+            guests: guests
+        };
+        return myGuest;
+    }
+
+    public async getInvitation(id: string): Promise<Invitation> {
+        const response = await HttpClient.get<InvitationEntity>("/api/invitations/" + id);
+        const e = response.data;
+        return this.mapToInvitation(e);
+    }
     public async deletInvitation(action: string): Promise<void> {
-        await axios.delete<void>(action);
+        await HttpClient.delete<void>(action);
+    }
+    public async updateGuestStatus(invitatuionId: string, status: GuestStatus): Promise<void> {
+        await HttpClient.patch<void>("/api/invitations/" + invitatuionId + "/guests/" + status.guestId, status);
+    }
+    public async updateInvitation(invitation: UpdateInvitation): Promise<void> {
+        await HttpClient.patch<void>("/api/invitations/" + invitation.id, invitation);
     }
     public async createInvitation(invitation: NewInvitation, guests: Guest[], companionCount: number, childrenCount: number): Promise<void> {
-        const newInvitation = await axios.post<InvitationEntity>("/api/invitations/", invitation);
+        const newInvitation = await HttpClient.post<InvitationEntity>("/api/invitations/", invitation);
         const newId = newInvitation.data.properties.id;
         console.log("newId=" + newId);
         for (const guest of guests) {
-            await axios.post<void>("/api/invitations/" + newId + "/guests", guest.id, { headers: { 'Content-Type': 'text/plain' } });
+            await HttpClient.post<void>("/api/invitations/" + newId + "/guests", guest.id, { headers: { 'Content-Type': 'text/plain' } });
         }
         for (let index = 0; index < companionCount; index++) {
             const ng: NewGuest = {
@@ -159,7 +194,7 @@ class InvitationService {
                 guestType: "Companion"
             };
             const guest = await GuestService.createGuest(ng);
-            await axios.post<void>("/api/invitations/" + newId + "/guests", guest.id, { headers: { 'Content-Type': 'text/plain' } });
+            await HttpClient.post<void>("/api/invitations/" + newId + "/guests", guest.id, { headers: { 'Content-Type': 'text/plain' } });
         }
         for (let index = 0; index < childrenCount; index++) {
             const ng: NewGuest = {
@@ -168,7 +203,7 @@ class InvitationService {
                 guestType: "Child"
             };
             const guest = await GuestService.createGuest(ng);
-            await axios.post<void>("/api/invitations/" + newId + "/guests", guest.id, { headers: { 'Content-Type': 'text/plain' } });
+            await HttpClient.post<void>("/api/invitations/" + newId + "/guests", guest.id, { headers: { 'Content-Type': 'text/plain' } });
         }
     }
 }
